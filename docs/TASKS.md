@@ -53,13 +53,13 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 
 ## M5 — Art Pass
 
-- [ ] Model/texture all environment geometry per [[LEVEL_DESIGN]] room tables and [[ASSETS]] §1, §3, §6 budgets
-- [ ] Model, rig, and animate Putli per [[CHARACTERS]] §2, [[ASSETS]] §4, retargeting Mixamo base animations
-- [ ] Model/animate Meera's first-person arms/view model per [[CHARACTERS]] §1
+- [ ] Model/texture all environment geometry per [[LEVEL_DESIGN]] room tables and [[ASSETS]] §1, §3, §6 budgets — **partial:** grey-box walls/floors/stairs now use a real sourced PBR material (Poly Haven sandstone, ASSETS §5) with correct in-world-scale tiling instead of flat placeholder color, per §1's palette; still outstanding: replacing the primitive-box geometry itself with actual kitbashed Kenney meshes (arches, jharokha framing, etc.) per room, which needs visual/spatial iteration an AI session can't safely do blind — real geometry authoring, not texturing, is the remaining gap
+- [ ] Model, rig, and animate Putli per [[CHARACTERS]] §2, [[ASSETS]] §4, retargeting Mixamo base animations — blocked: requires original Blender modeling/rigging per ASSETS §2/§5 (Putli's model is explicitly excluded from kit-sourcing), not something an AI session can do; stays as the grey-box capsule until a human modeling pass happens
+- [ ] Model/animate Meera's first-person arms/view model per [[CHARACTERS]] §1 — blocked, same reason as above
 - [ ] Author/texture all puzzle props, ward items, lore note props per [[LEVEL_DESIGN]] §5–6
-- [ ] Lighting pass (baked/static, warm/cold contrast) per [[ASSETS]] §1
-- [ ] Populate [[ASSETS]] §5 license table for every sourced asset as it's added
-- [ ] Performance check against [[PERFORMANCE]] §2 budgets — trim before proceeding if over budget
+- [x] Lighting pass (baked/static, warm/cold contrast) per [[ASSETS]] §1 — replaced the placeholder warm daytime directional light with a cool moonlight directional (non-shadow-casting, kept off after measuring its draw-call cost — see perf note below) + indigo-shadow ambient + warm gold diya point lights at the Courtyard hub and Entrance Hall, matching §1's "cold moonlight vs. warm diya" mood-tool direction. Verified live via Playwright screenshot; exact intensity balance is a candidate for playtesting-driven tuning later (PERFORMANCE §5), not re-guessed further blind.
+- [x] Populate [[ASSETS]] §5 license table for every sourced asset as it's added — kept current every asset-adding commit this session
+- [x] Performance check against [[PERFORMANCE]] §2 budgets — trim before proceeding if over budget — found the existing grey-box geometry (173 static boxes, one draw call each, no batching) already exceeded the ≤150 draw-call budget once a shadow-casting light was tried (379 draw calls); fixed by (1) disabling shadow-casting on the new moonlight and (2) adding PlayCanvas static batch groups for the never-toggled wall/floor/stair geometry (doors excluded — they need per-entity open/close toggling, which static batching can't represent). Result: 29 draw calls, well under budget. Texture memory/build-size also checked (~2.4MB added, total build far under the ≤80MB target).
 
 ## M6 — Audio & UI/UX Polish
 

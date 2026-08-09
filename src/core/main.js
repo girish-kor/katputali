@@ -26,12 +26,48 @@ app.setCanvasResolution(RESOLUTION_AUTO);
 
 window.addEventListener('resize', () => app.resizeCanvas());
 
-app.scene.ambientLight = new Color(0.35, 0.32, 0.3);
+// Lighting pass (M5, per ASSETS §1/§4): the haveli is explored at night, and cold moonlight vs.
+// warm diya/torch light is the game's primary mood tool — replaces the earlier warm daytime
+// placeholder (a bright directional "sun" read as midday, wrong mood for a night-set horror game).
+// Kept to a small, mostly non-shadow-casting light count per PERFORMANCE §4's "baked/static
+// lighting preferred over multiple real-time dynamic lights" guidance.
+app.scene.ambientLight = new Color(0.09, 0.1, 0.19); // indigo shadow (#232A4D), dim
 
-const sun = new Entity('sun');
-sun.addComponent('light', { type: 'directional', color: new Color(1, 0.95, 0.85), intensity: 1.2 });
-sun.setEulerAngles(55, 30, 0);
-app.root.addChild(sun);
+const moonlight = new Entity('moonlight');
+moonlight.addComponent('light', {
+  type: 'directional',
+  color: new Color(0.486, 0.576, 0.78), // moonlight blue rim (#7C93C7)
+  intensity: 0.85,
+  castShadows: false // re-measured against PERFORMANCE §2's draw-call budget: see level.js/main.js note
+});
+moonlight.setEulerAngles(55, 30, 0);
+app.root.addChild(moonlight);
+
+// Diya/torch warm point light at the courtyard (LEVEL_DESIGN §3 room 2) — the hub every route
+// passes through, so it's the one place a warm contrast light reliably pays off for every player.
+const courtyardDiya = new Entity('diya-courtyard');
+courtyardDiya.addComponent('light', {
+  type: 'omni',
+  color: new Color(0.831, 0.686, 0.216), // gold accent (#D4AF37)
+  intensity: 1.1,
+  range: 9,
+  castShadows: false
+});
+courtyardDiya.setPosition(0, 1.4, 0);
+app.root.addChild(courtyardDiya);
+
+// Entrance Hall (room 1) — the run's start point and the Gate route's end point, so it's lit at
+// both the first and (for that route) the last moment of a run.
+const entranceDiya = new Entity('diya-entrance-hall');
+entranceDiya.addComponent('light', {
+  type: 'omni',
+  color: new Color(0.831, 0.686, 0.216),
+  intensity: 0.9,
+  range: 7,
+  castShadows: false
+});
+entranceDiya.setPosition(0, 1.4, -9);
+app.root.addChild(entranceDiya);
 
 const { geometry } = buildLevel(app);
 
