@@ -51,8 +51,11 @@ Custom-made assets (modeled/textured by the solo dev, or AI-assisted per [[CODIN
 | Humanoid animation rig/base | Mixamo | Free (Adobe Mixamo license) | No (per Mixamo terms) | Not yet downloaded — needs a logged-in Adobe account via browser, not scriptable; used for Meera hand/arm and Putli base animation retargeting when added |
 | Rasa (body font, 4 weights) | Google Fonts | OFL | No (but credited anyway) | `/assets/fonts/rasa/` — see [[UI_UX]] §7 |
 | Yatra One (display font) | Google Fonts | OFL | No (but credited anyway) | `/assets/fonts/yatra-one/` |
-| SFX set | Freesound.org contributors | CC0 / CC-BY (per-file) | Per-file, tracked at asset-add time | Not yet sourced — M6 work, see [[AUDIO]] §1 |
-| Ambient/music beds | Freesound.org / original composition | CC0 / CC-BY / Original | Per-file | Not yet sourced — M6 work, see [[AUDIO]] §1 |
+| Interface Sounds (99 files) | Kenney.nl | CC0 | No (credited anyway) | `/assets/audio/kenney-interface-sounds/` — UI confirm/error/click/drop tones for pickup/combine/read per [[AUDIO]] §2 Player Audio |
+| RPG Audio (99 files) | Kenney.nl | CC0 | No (credited anyway) | `/assets/audio/kenney-rpg-audio/` — door open/close, book open/close/flip, `creak1-3.ogg` (raw wood-creak material for Putli's Patrol tell base layer, not the finished composite cue), generic footsteps |
+| Impact Sounds (98 files) | Kenney.nl | CC0 | No (credited anyway) | `/assets/audio/kenney-impact-sounds/` — `footstep_wood`/`footstep_concrete` (stone stand-in) surface-typed footstep sets, `impactBell_heavy` (raw material for Putli's *ghungroo* tell), `impactWood_*` for interactables |
+| SFX set (remaining gaps: water-surface footsteps, breathing loops) | Freesound.org contributors | CC0 / CC-BY (per-file) | Per-file, tracked at asset-add time | Not yet sourced — Freesound requires an API key + OAuth2 for full-quality download, not automatable without a logged-in session; Kenney's packs above cover most of §2's SFX list |
+| Ambient/music beds, Putli's full composite audio tells (creak+*ghungroo*+drone), Nazar hallucination stinger | Original composition (LMMS/Audacity) | N/A (own work) | N/A | Per [[AUDIO]] §1, these are explicitly meant to be original recording/synthesis, not sourced — not applicable to asset *downloading*; Kenney's raw creak/bell files above are candidate source material to layer, not a substitute |
 | Putli character model & textures | Original | N/A (own work) | N/A | Not yet modeled |
 | Environment retexturing & unique props | Original | N/A (own work) | N/A | Not yet modeled |
 
