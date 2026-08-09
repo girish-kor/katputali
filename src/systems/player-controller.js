@@ -4,6 +4,7 @@ import {
 import { PLAYER_MOVEMENT } from '../data/difficulty-presets.js';
 import { resolveWalls, findGroundHeight, computeWorldMoveDirection } from './player-movement-math.js';
 import { resolveSprintActive, updateStamina } from './player-stamina.js';
+import { createHidingState, clampPeekYaw } from './hiding.js';
 import { emit } from '../core/events.js';
 
 /**
@@ -21,7 +22,8 @@ export function createPlayerController(app, entity, cameraEntity, geometry, spaw
     isCrouching: false,
     isSprinting: false,
     verticalVelocity: 0,
-    stamina: PLAYER_MOVEMENT.staminaMax
+    stamina: PLAYER_MOVEMENT.staminaMax,
+    hiding: createHidingState()
   };
 
   const canvas = app.graphicsDevice.canvas;
@@ -33,12 +35,24 @@ export function createPlayerController(app, entity, cameraEntity, geometry, spaw
 
   app.mouse.on('mousemove', (e) => {
     if (!Mouse.isPointerLocked()) return;
-    state.yaw -= e.dx * PLAYER_MOVEMENT.mouseSensitivity;
+    const desiredYaw = state.yaw - e.dx * PLAYER_MOVEMENT.mouseSensitivity;
+    state.yaw = state.hiding.isHiding
+      ? clampPeekYaw(state.hiding.enterYaw, desiredYaw, PLAYER_MOVEMENT.peekMaxYawDeg)
+      : desiredYaw;
     state.pitch -= e.dy * PLAYER_MOVEMENT.mouseSensitivity;
     state.pitch = Math.max(-PLAYER_MOVEMENT.maxPitchDeg, Math.min(PLAYER_MOVEMENT.maxPitchDeg, state.pitch));
   });
 
   function update(dt) {
+    if (state.hiding.isHiding) {
+      entity.setPosition(state.position.x, state.position.y, state.position.z);
+      entity.setEulerAngles(0, state.yaw, 0);
+      cameraEntity.setLocalPosition(0, state.currentHeight - 0.15, 0);
+      cameraEntity.setLocalEulerAngles(state.pitch, 0, 0);
+      emit('player:state-changed', { isSprinting: false, isCrouching: state.isCrouching, stamina: state.stamina });
+      return;
+    }
+
     const keyboard = app.keyboard;
     const moveForward = (keyboard.isPressed(KEY_W) ? 1 : 0) - (keyboard.isPressed(KEY_S) ? 1 : 0);
     const moveRight = (keyboard.isPressed(KEY_D) ? 1 : 0) - (keyboard.isPressed(KEY_A) ? 1 : 0);

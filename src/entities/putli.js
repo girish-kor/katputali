@@ -29,7 +29,8 @@ export function createPutliEntity(app, geometry, player, spawn) {
       return PLAYER_MOVEMENT.walkNoiseRadius;
     },
     getDifficultyPreset: () => DIFFICULTY_PRESETS[DEFAULT_DIFFICULTY],
-    isPlayerHidingAt: () => false // M3 wires real hiding-spot enter/exit
+    isPlayerHiding: () => player.controller.state.hiding.isHiding,
+    isPlayerHidingAt: (spotId) => player.controller.state.hiding.isHiding && player.controller.state.hiding.spotId === spotId
   });
 
   function update(dt) {

@@ -14,13 +14,15 @@ RunState = {
   notesReadThisRun: [NoteId, ...],
   routeProgress: {
     gate: { fragments: [bool, bool, bool], assembled: bool },
-    baori: { parts: [bool, bool, bool], torchLit: bool },
+    baori: { parts: [bool, bool, bool], repaired: bool, torchLit: bool },
     rooftop: { rope: bool, hook: bool, counterweight: bool, rigged: bool }
   },
   putli: { state: "idle"|"patrol"|"investigate"|"chase"|"search"|"capture", currentLoop: string }
 }
 ```
 Reset in full on every "New Game" (no mid-run save/resume — see [[PRD]] §5.10, [[GDD]] §4).
+
+**M3 addition:** `baori.repaired` was missing from the original schema even though LEVEL_DESIGN §5's Baori chain has a distinct "repair pulley" step between collecting parts and lighting the torch — added here per [[CODING_RULES]] §6 before implementing.
 
 ## 2. Persisted Data — Settings
 
@@ -81,6 +83,12 @@ AI_TIMING = {
 }
 ```
 
+Noise-trap constant (GAME_MECHANICS §3 — "always emit a fixed 'loud' noise burst regardless of movement state"; not difficulty-scoped, same reasoning as AI_TIMING above):
+
+```js
+NOISE_TRAP_RADIUS = 10  // m, deliberately louder than even sprintNoiseRadius (8m above)
+```
+
 Player movement constants (not difficulty-scoped — only Putli's own speed/senses vary by preset above; illustrative defaults, tunable during playtesting per [[TESTING]] §4):
 
 ```js
@@ -102,7 +110,8 @@ PLAYER_MOVEMENT = {
   maxPitchDeg: 85,         // camera pitch clamp, prevents look-axis flip
   crouchNoiseRadius: 1.5,  // m, how far Putli's hearing sensor can pick up this movement state
   walkNoiseRadius: 4,      // (GAME_MECHANICS §3) — actual detection also capped by the active
-  sprintNoiseRadius: 8     // difficulty preset's hearingRadius above (AI_SYSTEM §3)
+  sprintNoiseRadius: 8,    // difficulty preset's hearingRadius above (AI_SYSTEM §3)
+  peekMaxYawDeg: 45        // GAME_MECHANICS §3 "camera limited to a peek view" while hiding
 }
 ```
 

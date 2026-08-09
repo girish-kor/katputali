@@ -5,7 +5,7 @@ import { buildNavigationGraph, findPath, findNearestNode, pathToWaypoints, roomN
 import { PATROL_ROUTES, pickNextPatrolRoute } from '../data/patrol-routes.js';
 import { nearestHidingSpots } from '../data/hiding-spots.js';
 import { AI_TIMING } from '../data/difficulty-presets.js';
-import { emit } from '../core/events.js';
+import { on, emit } from '../core/events.js';
 
 const CAPSULE_RADIUS = 0.35;
 const CAPSULE_HEIGHT = 1.9;
@@ -80,7 +80,9 @@ function sensorTick(ctx, dt) {
   const playerPos = ctx.getPlayerPosition();
   const preset = ctx.getDifficultyPreset();
   const heard = checkHearing(ctx.position, playerPos, ctx.getPlayerNoiseRadius(), preset.hearingRadius);
-  const seen = checkSight(ctx.position, ctx.yaw, playerPos, preset.sightRange, preset.sightAngleDeg, ctx.geometry.wallColliders);
+  // A hidden player is untargetable by sight but still audible if noisy (GAME_MECHANICS §3).
+  const seen = !ctx.isPlayerHiding() &&
+    checkSight(ctx.position, ctx.yaw, playerPos, preset.sightRange, preset.sightAngleDeg, ctx.geometry.wallColliders);
   return { checked: true, heard, seen, playerPos };
 }
 
@@ -222,9 +224,10 @@ const states = {
 
 /**
  * Creates Putli's FSM instance (AI_SYSTEM §2). `deps` supplies the world-facing hooks:
- * getPlayerPosition, getPlayerNoiseRadius, getDifficultyPreset, isPlayerHidingAt (stubbed false
- * until M3 wires real hiding-spot enter/exit), geometry (from level.js), spawn position, and an
- * optional `random` source for deterministic tests.
+ * getPlayerPosition, getPlayerNoiseRadius, getDifficultyPreset, isPlayerHiding (global
+ * untargetable-by-sight check) and isPlayerHidingAt (per-spot check for the Search-state
+ * discovery roll) — both default false until wired to a real hiding system, geometry (from
+ * level.js), spawn position, and an optional `random` source for deterministic tests.
  */
 export function createPutli(deps) {
   const graph = buildNavigationGraph();
@@ -238,6 +241,7 @@ export function createPutli(deps) {
     getPlayerPosition: deps.getPlayerPosition,
     getPlayerNoiseRadius: deps.getPlayerNoiseRadius,
     getDifficultyPreset: deps.getDifficultyPreset,
+    isPlayerHiding: deps.isPlayerHiding ?? (() => false),
     isPlayerHidingAt: deps.isPlayerHidingAt ?? (() => false),
     sensorAccumMs: 0,
     currentLoop: null,
@@ -257,10 +261,23 @@ export function createPutli(deps) {
     }
   }
 
+  // Discrete noise events (noise-trap tiles, GAME_MECHANICS §3) bypass the throttled continuous
+  // hearing check and go straight to Investigate if within range — a burst that loud shouldn't
+  // wait for the next sensor tick, and it always overrides Patrol's own ongoing sensor read.
+  const unsubscribeNoise = on('noise:emitted', ({ position, radius }) => {
+    if (fsm.state !== 'patrol' && fsm.state !== 'investigate') return;
+    const heard = checkHearing(ctx.position, position, radius, ctx.getDifficultyPreset().hearingRadius);
+    if (!heard) return;
+    ctx.lastKnownPlayerPos = { ...position };
+    fsm.transition('investigate');
+    lastState = fsm.state;
+  });
+
   return {
     ctx,
     update,
     get state() { return fsm.state; },
-    forceState(name) { fsm.transition(name); lastState = fsm.state; }
+    forceState(name) { fsm.transition(name); lastState = fsm.state; },
+    destroy() { unsubscribeNoise(); }
   };
 }

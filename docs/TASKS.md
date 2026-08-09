@@ -31,13 +31,13 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 
 ## M3 — Inventory, Puzzles, Escape Routes
 
-- [ ] Implement `inventory` system (5 slots, pickup/drop/combine) per [[GAME_MECHANICS]] §2
-- [ ] Populate item/interactable data per [[DATA_MODEL]] §5–6, matching [[LEVEL_DESIGN]] §5–6 exactly
-- [ ] Implement all 3 escape-route puzzle chains end-to-end (Gate, Baori, Rooftop) as interactable stations
-- [ ] Implement hiding-spot interactables (enter/exit, peek) per [[GAME_MECHANICS]] §3
-- [ ] Implement noise-trap floor tiles per [[GAME_MECHANICS]] §3, [[LEVEL_DESIGN]]
-- [ ] Unit tests for `inventory` combine logic per [[TESTING]] §2
-- [ ] Playtest: confirm all 3 routes are completable with no soft-locks (grey-box acceptable)
+- [x] Implement `inventory` system (5 slots, pickup/drop/combine) per [[GAME_MECHANICS]] §2
+- [x] Populate item/interactable data per [[DATA_MODEL]] §5–6, matching [[LEVEL_DESIGN]] §5–6 exactly
+- [x] Implement all 3 escape-route puzzle chains end-to-end (Gate, Baori, Rooftop) as interactable stations
+- [x] Implement hiding-spot interactables (enter/exit, peek) per [[GAME_MECHANICS]] §3
+- [x] Implement noise-trap floor tiles per [[GAME_MECHANICS]] §3, [[LEVEL_DESIGN]]
+- [x] Unit tests for `inventory` combine logic per [[TESTING]] §2
+- [x] Playtest: confirm all 3 routes are completable with no soft-locks (grey-box acceptable)
 
 *Scope gate: after M3, any new Must/Should feature addition requires the trade-off process in [[FEATURES]] §5.*
 

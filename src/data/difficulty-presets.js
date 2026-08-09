@@ -30,7 +30,8 @@ export const PLAYER_MOVEMENT = {
   maxPitchDeg: 85,
   crouchNoiseRadius: 1.5,
   walkNoiseRadius: 4,
-  sprintNoiseRadius: 8
+  sprintNoiseRadius: 8,
+  peekMaxYawDeg: 45
 };
 
 /** Putli AI timing — not difficulty-scoped, see DATA_MODEL §4. */
@@ -43,3 +44,6 @@ export const AI_TIMING = {
   hidingSpotCheckCount: 2,
   captureSequenceSeconds: 2
 };
+
+/** GAME_MECHANICS §3 — a noise trap's fixed emission radius, deliberately louder than sprint. */
+export const NOISE_TRAP_RADIUS = 10;

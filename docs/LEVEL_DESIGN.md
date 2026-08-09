@@ -80,10 +80,13 @@ Courtyard (Room 2) is the only room with direct access to all four branches (ent
 
 All three chains are solvable independently and in any order; no chain requires an item from another chain (see [[GAME_MECHANICS]] §2). The Library's fresco diya-pattern puzzle is a stand-alone lock puzzle (light 5 diyas in the sequence shown in a fresco) gating the room's key fragment/counterweight, not a separate fourth route.
 
+**M3 grey-box simplification:** the diya-sequence input itself (5 individually-ordered lights) is a puzzle-feel/UI concern more than a grey-box-traversal one — full HUD and interact-prompt UI don't exist until M6 (see [[UI_UX]] §2). For M3, the fresco station is a single interactable that solves immediately on interact, granting both the key fragment and counterweight it gates. The real ordered-sequence mechanic is a Should-have polish item for a later milestone (see [[FEATURES]]), not a functional gap in the Gate/Rooftop routes — swapping in the real sequence check later only touches this one station's interaction handler, not the routes themselves.
+
 ## 6. Lore & Ward Item Placement
 
 - **6 diary notes** total: 1 in Meera's Bedroom, 3 in Sohni Bai's Locked Room, 1 in Library, 1 in Family Shrine — matches the "6 notes" completionist stat in [[UI_UX]] and [[SCENARIO]] §7.
 - **3 ward items** total (2 neem bundles, 1 kalava thread) placed in Guard Room, Family Shrine, and Sohni Bai's Locked Room — deliberately placed near the highest-Nazar rooms so the player earns mitigation near the pressure that requires it.
+- **Sohni Bai's room-key** (the "found room-key" §3's room table requires to enter Room 9): placed in Family Shrine — thematically the ancestral shrine holding the ward items also holds access to Sohni Bai's quarters. Not specified in the original room tables; recorded here per [[CODING_RULES]] §6 before implementing the room's lock in M3.
 
 ## 7. Hiding Spots
 

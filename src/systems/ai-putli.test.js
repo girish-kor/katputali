@@ -62,6 +62,16 @@ describe('ai-putli FSM transitions', () => {
     expect(putli.state).toBe('chase');
   });
 
+  it('a hidden player is untargetable by sight, even standing dead ahead in range (GAME_MECHANICS §3)', () => {
+    const deps = makeDeps({ getPlayerNoiseRadius: () => 0, isPlayerHiding: () => true });
+    const putli = createPutli(deps);
+    putli.forceState('patrol');
+    putli.ctx.yaw = 0;
+    deps.setPlayerPosition({ x: 0, y: 0, z: -3 });
+    putli.update(TICK);
+    expect(putli.state).toBe('patrol');
+  });
+
   it('Chase -> Capture when it closes to capture radius', () => {
     const deps = makeDeps();
     const putli = createPutli(deps);
@@ -163,6 +173,32 @@ describe('ai-putli FSM transitions', () => {
         expect(completed, `stalled at waypoint ${maxIndexSeen}/${waypoints.length}`).toBe(true);
       });
     }
+  });
+
+  it('a noise-trap burst (noise:emitted) sends Patrol straight to Investigate within range', () => {
+    const putli = createPutli(makeDeps());
+    putli.forceState('patrol');
+    // Within the normal preset's 8m hearingRadius of spawn (0,0,0) — see checkHearing's
+    // min(noiseRadius, hearingRadius) rule.
+    events.emit('noise:emitted', { position: { x: 5, y: 0, z: 0 }, radius: 10 });
+    expect(putli.state).toBe('investigate');
+    putli.destroy();
+  });
+
+  it('ignores a noise burst outside both its radius and the hearing radius', () => {
+    const putli = createPutli(makeDeps());
+    putli.forceState('patrol');
+    events.emit('noise:emitted', { position: { x: 500, y: 0, z: 500 }, radius: 10 });
+    expect(putli.state).toBe('patrol');
+    putli.destroy();
+  });
+
+  it('a destroyed Putli instance no longer reacts to noise events', () => {
+    const putli = createPutli(makeDeps());
+    putli.forceState('patrol');
+    putli.destroy();
+    events.emit('noise:emitted', { position: { x: 0, y: 0, z: 0 }, radius: 10 });
+    expect(putli.state).toBe('patrol');
   });
 
   it('emits putli:state-changed on every transition', () => {
