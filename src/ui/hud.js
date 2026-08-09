@@ -2,9 +2,13 @@ import { INTERACTABLES } from '../data/interactables.js';
 import { ITEMS_BY_ID } from '../data/items.js';
 import { CAPTURE_TIMING } from '../data/difficulty-presets.js';
 import { on } from '../core/events.js';
+import { loadSettings } from '../systems/save-manager.js';
 import {
   formatPraharClock, nazarFraction, capturePipsState, interactVerb, endingTitle
 } from './hud-format.js';
+import { putliStateCaption, CAPTURE_CAPTION, NAZAR_HALLUCINATION_CAPTION } from './captions-format.js';
+
+const CAPTION_DISPLAY_MS = 3000;
 
 const INTERACTABLES_BY_ID = new Map(INTERACTABLES.map(def => [def.id, def]));
 
@@ -53,6 +57,25 @@ export function createHud({ player, runManager, world }) {
     endScreen.classList.remove('hud-hidden');
   });
 
+  // Captions for Putli's state tells, capture, and Nazar hallucination — UI_UX §6/AUDIO §5's
+  // hard accessibility requirement that every state-defining audio cue also be readable as text.
+  // Gated by the existing captions setting (DATA_MODEL §2, default true); read once here since
+  // there's no live Settings screen yet to change it mid-session (separate M6 task).
+  const captionsEnabled = loadSettings().accessibility.captions;
+  const caption = el('div', 'hud-center hud-caption hud-hidden', root);
+  let captionClearAtMs = 0;
+
+  function showCaption(text) {
+    if (!captionsEnabled || !text) return;
+    caption.textContent = text;
+    caption.classList.remove('hud-hidden');
+    captionClearAtMs = performance.now() + CAPTION_DISPLAY_MS;
+  }
+
+  on('putli:state-changed', ({ to }) => showCaption(putliStateCaption(to)));
+  on('putli:capture', () => showCaption(CAPTURE_CAPTION));
+  on('nazar:hallucination-started', () => showCaption(NAZAR_HALLUCINATION_CAPTION));
+
   function update() {
     prahar.textContent = formatPraharClock(runManager.prahar.current, runManager.prahar.secondsRemaining);
 
@@ -86,6 +109,11 @@ export function createHud({ player, runManager, world }) {
       struggle.classList.remove('hud-hidden');
     } else {
       struggle.classList.add('hud-hidden');
+    }
+
+    if (captionClearAtMs && performance.now() >= captionClearAtMs) {
+      caption.classList.add('hud-hidden');
+      captionClearAtMs = 0;
     }
   }
 

@@ -63,13 +63,13 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 
 ## M6 — Audio & UI/UX Polish
 
-- [ ] Source/record and implement all Putli state audio tells per [[AUDIO]] §2–3
-- [ ] Implement player footstep/breathing/interact audio per [[AUDIO]] §2
-- [ ] Implement ambient layers per floor/room per [[AUDIO]] §2
-- [ ] Implement music stingers at key tension beats per [[AUDIO]] §2
+- [ ] Source/record and implement all Putli state audio tells per [[AUDIO]] §2–3 — **partial:** `src/systems/audio-manager.js` implements Patrol/Investigate/Chase/Search using the sourced Kenney creak+*ghungroo*-bell material (positional 3D audio on Putli's own entity, per AUDIO §3/§4), with per-state rhythm via DATA_MODEL §1b's new `AUDIO_TIMING`. Captions added alongside (UI_UX §6/AUDIO §5's hard requirement — see the HUD checkbox below). Still missing, and recorded as a gap rather than silently done: Chase's drone-swell layer and Capture's dedicated string-snap sting have no sourced or original audio (AUDIO §1 scopes these as original composition, not kit-sourced) — Capture currently plays a sourced impact hit as an honest approximation, not the described composite cue.
+- [ ] Implement player footstep/breathing/interact audio per [[AUDIO]] §2 — **partial:** footstep and UI/interact (confirm/error/book/cloth) audio implemented via `audio-manager.js`, sourced from Kenney. Footsteps use one generic "stone" set for every room since no per-room surface-type data exists yet (every room currently renders the same M5 sandstone texture) — true wood/stone/water differentiation per AUDIO §2 is still open. Breathing (sprint effort, held-breath while hiding) has no sourced or recorded audio yet — Freesound-blocked, same reasoning as the prior asset-download session.
+- [ ] Implement ambient layers per floor/room per [[AUDIO]] §2 — not started; AUDIO §1 scopes this as original recording/composition, not sourced content, so it wasn't unblocked by the Kenney asset downloads the way footsteps/UI/creak material was.
+- [ ] Implement music stingers at key tension beats per [[AUDIO]] §2 — not started, same original-composition scoping as ambient layers above.
 - [x] Build full HUD (Prahar clock, capture pips, Nazar meter, inventory bar) per [[UI_UX]] §2 — also includes the interact prompt and struggle QTE overlay from the same §2 table; final aged-paper/miniature-painting-frame texture is separate M5 Art Pass work layered onto this structure later
 - [ ] Build Title/Settings/Difficulty-Select/Pause/End screens per [[UI_UX]] §1, §4–5
-- [ ] Implement captions for all critical audio cues per [[UI_UX]] §6, [[AUDIO]] §5
+- [x] Implement captions for all critical audio cues per [[UI_UX]] §6, [[AUDIO]] §5 — Putli's proximity tell (per state), the capture event, and the Nazar hallucination trigger all show bottom-screen text via hud.js, gated by the existing `accessibility.captions` setting (DATA_MODEL §2, default on). Ending narration text doesn't apply yet (no narration text exists — endings are stat readouts only, per UI_UX §5). Setting is read once at HUD creation since there's no live Settings screen yet to toggle it mid-session — that's the item above.
 - [ ] Implement colorblind-safe HUD toggle, camera-shake slider per [[UI_UX]] §6
 - [ ] Implement full rebinding (keyboard + gamepad) per [[CONTROLS]] §3
 - [ ] Accessibility testing pass per [[TESTING]] §5

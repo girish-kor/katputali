@@ -119,6 +119,15 @@ html, body {
 .hud-struggle-text { margin-bottom: 0.5rem; font-size: 0.95rem; }
 .hud-struggle-track { width: 100%; }
 
+.hud-caption {
+  bottom: 12%;
+  padding: 0.4rem 1rem;
+  background: rgba(20, 16, 10, 0.82);
+  border-left: 3px solid #d4af37;
+  font-size: 1rem;
+  max-width: 28rem;
+}
+
 .hud-fullscreen {
   position: absolute;
   inset: 0;

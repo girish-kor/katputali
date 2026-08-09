@@ -65,3 +65,16 @@ export const NAZAR_TIMING = {
   hallucinationSeconds: 8,
   baselineAfterPenalty: 40
 };
+
+/** AUDIO §2's Putli-tell rhythm/footstep cadence — not difficulty-scoped, see DATA_MODEL §1b. */
+export const AUDIO_TIMING = {
+  putliBellIntervalPatrolSec: 2.2,
+  putliBellIntervalChaseSec: 0.6,
+  putliBellIntervalSearchSec: 3.0,
+  putliCreakPitchPatrol: 1.0,
+  putliCreakPitchChase: 1.35,
+  putliCreakPitchSearch: 0.85,
+  footstepIntervalWalkSec: 0.5,
+  footstepIntervalSprintSec: 0.32,
+  footstepIntervalCrouchSec: 0.7
+};

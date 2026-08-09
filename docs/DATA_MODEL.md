@@ -48,6 +48,26 @@ NAZAR_TIMING = {
 }
 ```
 
+## 1b. Config Data — Audio Timing (M6)
+
+AUDIO §2's Putli-tell table describes cue *rhythm* qualitatively ("faster, louder creak," "slower, deliberate... with pauses") without numbers, and player footstep cadence wasn't specified anywhere — added here before implementing, per [[CODING_RULES]] §6. Reuses PlayCanvas's sound-slot `pitch` to cheaply vary a single looping creak clip's rhythm per Putli state (a solo-dev-scale substitute for authoring separate creak stems per state), and a bell/*ghungroo* one-shot fired on a per-state interval rather than looped, matching the table's "single sharper bell note" (Investigate) vs. constant jingle (Patrol/Chase) distinction:
+
+```js
+AUDIO_TIMING = {
+  putliBellIntervalPatrolSec: 2.2,   // faint constant jingle while Patrol
+  putliBellIntervalChaseSec: 0.6,    // heavier, faster jingle while Chase
+  putliBellIntervalSearchSec: 3.0,   // sparser while Search ("slower, deliberate... with pauses")
+  putliCreakPitchPatrol: 1.0,
+  putliCreakPitchChase: 1.35,        // "faster... creak rhythm" — pitch also raises the loop's tempo
+  putliCreakPitchSearch: 0.85,       // "slower, deliberate creak with pauses"
+  footstepIntervalWalkSec: 0.5,
+  footstepIntervalSprintSec: 0.32,
+  footstepIntervalCrouchSec: 0.7
+}
+```
+
+**Known gap (recorded, not silently skipped):** Chase's "low string-tension drone that swells" and Capture's "string-snap" (AUDIO §2) have no sourced or original audio yet — AUDIO §1 scopes these as original composition/synthesis, not sourced content (see [[ASSETS]] §5's license table note on this same point). The current implementation approximates Capture with a single sourced impact hit rather than the described composite sting; the drone layer is not implemented at all. Both are flagged in [[TASKS]] M6, not silently marked done.
+
 ## 2. Persisted Data — Settings
 
 ```json

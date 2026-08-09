@@ -133,7 +133,13 @@ export function createRunManager({
       }
       updateWardShortcut();
     }
+    const wasHallucinating = nazar.hallucinating;
     updateNazar(nazar, dt, NAZAR_TIMING);
+    // Edge-triggered, not level-triggered — UI_UX §6/AUDIO §5 require this be captioned, so
+    // hud.js needs a one-shot "it just started" signal, not a per-frame "is hallucinating" poll.
+    if (!wasHallucinating && nazar.hallucinating) {
+      emit('nazar:hallucination-started', {});
+    }
 
     const praharResult = updatePrahar(prahar, dt, preset.praharSeconds);
     if (praharResult === 'loss') triggerEnding('bound');

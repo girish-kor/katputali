@@ -9,6 +9,7 @@ import { createInteractableEntities } from '../entities/interactables.js';
 import { createInteractableHandler } from '../systems/interactable-handler.js';
 import { createNoiseTrapTracker } from '../systems/noise-traps.js';
 import { createRunManager } from '../systems/run-state.js';
+import { createAudioManager } from '../systems/audio-manager.js';
 import { createHud } from '../ui/hud.js';
 import { INTERACTABLES } from '../data/interactables.js';
 import { NOISE_TRAP_RADIUS, DEFAULT_DIFFICULTY } from '../data/difficulty-presets.js';
@@ -95,6 +96,7 @@ const runManager = createRunManager({
 });
 
 const hud = createHud({ player, runManager, world: interactableHandler.world });
+const audioManager = createAudioManager({ app, putliRoot: putli.root });
 
 app.on('update', dt => {
   player.update(dt);
@@ -106,6 +108,7 @@ app.on('update', dt => {
     emit('noise:emitted', { position: trap.position, radius: NOISE_TRAP_RADIUS });
   }
 
+  audioManager.update(dt, player.controller.state);
   hud.update();
 });
 

@@ -13,6 +13,7 @@ export function createPlayer(app, geometry, spawn) {
 
   const camera = new Entity('player-camera');
   camera.addComponent('camera', { fov: 70, nearClip: 0.05, farClip: 200 });
+  camera.addComponent('audiolistener'); // required for positional audio distance/pan (AUDIO §3)
   root.addChild(camera);
 
   const controller = createPlayerController(app, root, camera, geometry, spawn);
