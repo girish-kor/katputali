@@ -19,17 +19,19 @@ stateDiagram-v2
     Investigate --> Chase : spotted player
     Chase --> Search : lost player, sight+sound escape (timeout)
     Chase --> Capture : reached player
-    Search --> Capture : timeout
-    Search --> Patrol : returns to Patrol
+    Search --> Capture : found player (hiding-spot discovery, or closed to capture radius directly)
+    Search --> Patrol : timeout, nothing found
     Capture --> Patrol : returns to Patrol
 ```
+
+**Diagram correction:** the original draft of this diagram labeled the Search→Capture edge "timeout," which contradicted the Search prose below (timeout goes to Patrol) and Capture's own prose (triggered by closing distance, not by a timer). Fixed above — Search→Capture fires on a successful hiding-spot discovery roll (§4) or if Putli otherwise closes to capture radius of the player while searching, exactly like Chase→Capture; Search→Patrol is the timeout path.
 
 - **Idle:** only active during the opening grace period (see [[SCENARIO]] §1). No sensors active.
 - **Patrol:** follows a weighted-random patrol loop (see [[LEVEL_DESIGN]] §8). Both hearing and sight sensors active (§3). Emits the constant wood-creak/*ghungroo* audio tell (see [[AUDIO]]).
 - **Investigate:** triggered by a heard-but-unseen noise event. Moves to the noise's last known position, pauses, plays a distinct "listening" animation/audio beat, then returns to Patrol if nothing found within a timeout.
 - **Chase:** triggered by the sight sensor acquiring the player, or by Investigate directly spotting the player. Moves at chase speed (faster than patrol) directly toward the player's current tracked position. Ends if the player breaks both sight and sound detection for a sustained duration → transitions to Search.
-- **Search:** moves to the player's last known position, then checks a small number of nearby hiding spots (weighted by proximity) with a per-spot chance to find the player (see [[GAME_MECHANICS]] §3). Times out back to Patrol if unsuccessful.
-- **Capture:** triggered when Chase closes distance to a fixed capture radius. Non-interactive short sequence, then hands off to the capture/struggle system (see [[GAME_MECHANICS]] §4). Always returns to Patrol afterward, never directly re-enters Chase (see grace period, [[GAME_MECHANICS]] §4).
+- **Search:** moves to the player's last known position, then checks a small number of nearby hiding spots (weighted by proximity) with a per-spot chance to find the player (see [[GAME_MECHANICS]] §3). Also transitions straight to Capture if Putli closes to capture radius of the player during the search (e.g. the player didn't hide at all). Times out back to Patrol if unsuccessful.
+- **Capture:** triggered when Chase or Search closes distance to a fixed capture radius, or Search's hiding-spot discovery succeeds. Non-interactive short sequence, then hands off to the capture/struggle system (see [[GAME_MECHANICS]] §4). Always returns to Patrol afterward, never directly re-enters Chase (see grace period, [[GAME_MECHANICS]] §4).
 
 ## 3. Sensors
 
@@ -58,8 +60,8 @@ All sensor radii, Chase/Patrol speed, Investigate/Search timeout durations, and 
 ## 8. Technical Implementation Notes
 
 - Implemented as an explicit FSM (plain JS class/module, states as string enum, one `update(dt)` per active state) — not a behavior tree or ML model; see [[ARCHITECTURE]] §3 for where this module lives and [[CODING_RULES]] for the state-machine pattern convention used project-wide (also used for the player's hide/QTE states).
-- Pathfinding uses PlayCanvas's navmesh/`pc.NavMesh` + `pc.NavMeshQuery` pathing (via the engine's built-in Recast-based navigation, see [[TECH_STACK]] §2) baked once from level geometry at build/load time — no runtime navmesh regeneration needed given the static level (see [[LEVEL_DESIGN]] §9).
-- Agent radius/height for the navmesh bake must match doorway clearances specified in [[LEVEL_DESIGN]] §8 to guarantee no patrol route ever clips geometry.
+- **Pathfinding: hand-rolled waypoint graph, not a navmesh.** The pinned `playcanvas` npm engine package ships no navmesh/Recast API (see [[TECH_STACK]] §1's pathfinding-correction note) — reusing a real navmesh would mean adding a new WASM pathfinding dependency, which conflicts with this doc's own §1 "cheap to implement and debug" goal and [[TECH_STACK]]'s dependency-minimalism rule. Instead, `/src/data/navigation-graph.js` derives a graph directly from the grey-box level data (`/src/data/level-geometry.js`): one node per room center, one per door (connecting the two rooms it joins), and one pair per staircase (base/top, connecting to their owning rooms and to each other). Routing between two arbitrary points (e.g. Chase/Investigate/Search targeting the player) is Dijkstra over this graph to the nearest node, then a straight line within each room; vertical movement across a staircase edge reuses the player controller's own step-up ground-height logic (`player-movement-math.js`), so Putli climbs stairs exactly like the player does, with no separate ramp/stair-following code.
+- Doorway clearances (see [[LEVEL_DESIGN]] §3's grey-box scale note, §8) already exceed Putli's collider size by construction, so graph edges through doors never clip geometry.
 - All tunable values live in one JSON/JS config module per difficulty (see [[DATA_MODEL]] §4), loaded at run start — never hardcoded inline in the FSM code.
 
 ## 9. Out of Scope

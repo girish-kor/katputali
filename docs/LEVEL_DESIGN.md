@@ -89,6 +89,8 @@ All three chains are solvable independently and in any order; no chain requires 
 
 Fixed set of 7: 4 courtyard pillars (Room 2), Guard Room almirah (Room 5), Family Shrine jaali screen (Room 11), Stepwell alcove (Room 6). Distribution ensures every floor has at least one hiding spot reachable within a short sprint of any point on that floor (validated per [[TESTING]] §4).
 
+**Grey-box positions (M2, world coordinates matching `/src/data/level-geometry.js`):** courtyard pillars at (4,0,4), (-4,0,4), (4,0,-4), (-4,0,-4); Guard Room almirah at (8.5,0,1); Family Shrine jaali screen at (1,3.3,6.5); Stepwell alcove at (4,-3.3,-4) — each a ~0.5m-radius spot, chosen clear of the staircase footprints and door gaps recorded in that file. Full pickup/peek interaction lands in M3 (see [[GAME_MECHANICS]] §3); M2 only needs these positions for Putli's Search-state proximity check (see [[AI_SYSTEM]] §4).
+
 ## 8. Putli's Patrol Routes
 
 Three overlapping patrol loops anchored on the Courtyard, extending to Ground floor wing, First floor, and Basement respectively, with weighted random selection between loops at each patrol-loop completion — full behavioral logic in [[AI_SYSTEM]] §5. Level geometry (door widths, stair layout) must accommodate Putli's navmesh agent radius — see [[PHYSICS]] §2 and [[AI_SYSTEM]] §8 for the technical constraint this places on room 2/6/10 doorway sizing.

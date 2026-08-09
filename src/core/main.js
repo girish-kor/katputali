@@ -4,6 +4,7 @@ import {
 } from 'playcanvas';
 import { buildLevel } from './level.js';
 import { createPlayer } from '../entities/player.js';
+import { createPutliEntity } from '../entities/putli.js';
 
 const canvas = document.getElementById('app-canvas');
 
@@ -27,7 +28,11 @@ app.root.addChild(sun);
 const { geometry } = buildLevel(app);
 
 const player = createPlayer(app, geometry, { x: 0, y: 0, z: -8, yaw: 180 });
+const putli = createPutliEntity(app, geometry, player, { x: 0, y: 0, z: 0 });
 
-app.on('update', dt => player.update(dt));
+app.on('update', dt => {
+  player.update(dt);
+  putli.update(dt);
+});
 
 app.start();

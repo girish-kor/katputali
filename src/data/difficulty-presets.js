@@ -27,5 +27,19 @@ export const PLAYER_MOVEMENT = {
   staminaRegenPerSec: 12.5,
   staminaMinToSprint: 5,
   mouseSensitivity: 0.15,
-  maxPitchDeg: 85
+  maxPitchDeg: 85,
+  crouchNoiseRadius: 1.5,
+  walkNoiseRadius: 4,
+  sprintNoiseRadius: 8
+};
+
+/** Putli AI timing — not difficulty-scoped, see DATA_MODEL §4. */
+export const AI_TIMING = {
+  activationGraceSeconds: 45,
+  sensorTickIntervalMs: 175,
+  investigateTimeoutSec: 6,
+  chaseToSearchTimeoutSec: 4,
+  captureRadius: 0.75,
+  hidingSpotCheckCount: 2,
+  captureSequenceSeconds: 2
 };

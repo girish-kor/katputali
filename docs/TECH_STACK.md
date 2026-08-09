@@ -10,7 +10,8 @@ Authoritative technology list. Anything not listed here requires a deliberate ad
   - Avoids any dependency on PlayCanvas's cloud project/hosting limits — this project's own hosting is chosen independently (see [[DEPLOYMENT]]).
   - MIT license, npm-installable, zero cost at any scale, no account required to build or ship.
 - **Version policy:** Pin to a specific published `playcanvas` npm major/minor version at project start; upgrade deliberately, not automatically (see [[CODING_RULES]] §1).
-- **Engine features used:** Entity-Component-System scene graph, `pc.SoundComponent` (audio, see [[AUDIO]] §3), built-in navmesh/navigation (`pc.NavMesh` family, see [[AI_SYSTEM]] §8), built-in `pc.CollisionComponent`/trigger system (see [[PHYSICS]] §1), animation state graph (`pc.AnimComponent`) for Putli/Meera animation states.
+- **Engine features used:** Entity-Component-System scene graph, `pc.SoundComponent` (audio, see [[AUDIO]] §3), built-in `pc.CollisionComponent`/trigger system (see [[PHYSICS]] §1), animation state graph (`pc.AnimComponent`) for Putli/Meera animation states.
+- **Pathfinding correction (M2):** the pinned `playcanvas@2.21.3` npm engine package ships no `pc.NavMesh`/`pc.NavMeshQuery`/Recast API at all (verified against the installed package's exports and source tree — zero matches) — that capability does not exist in the code-first engine package this project uses, whatever its origin (possibly an Editor-only tool or a different/older distribution). Putli's pathfinding instead uses a hand-rolled waypoint graph (room centers + door/stair connectors, Dijkstra-routed) — see [[AI_SYSTEM]] §8. No navmesh-baking dependency (WASM or otherwise) was added: doing so would reintroduce the same heavy-WASM cost this doc's §7 minimalism rule and [[PHYSICS]] §1 explicitly rejected for Ammo.js.
 
 ## 2. Build Tooling
 

@@ -67,6 +67,20 @@ DIFFICULTY_PRESETS = {
 ```
 Player-side constants (stamina drain/regen rate, sprint/crouch/walk noise-radius multipliers, capture struggle window length and success threshold) live in the same config module, also difficulty-scoped where relevant — see [[GAME_MECHANICS]] §3–4, [[PHYSICS]] §4.
 
+Putli AI timing constants, not difficulty-scoped (only sensor radii/speed/search-persistence/discovery-chance above vary by preset, per [[AI_SYSTEM]] §6):
+
+```js
+AI_TIMING = {
+  activationGraceSeconds: 45,     // SCENARIO §1 — Idle -> Patrol delay
+  sensorTickIntervalMs: 175,      // AI_SYSTEM §3's 150-200ms throttle
+  investigateTimeoutSec: 6,       // Investigate -> Patrol if nothing found
+  chaseToSearchTimeoutSec: 4,     // sustained loss-of-detection before Chase -> Search
+  captureRadius: 0.75,            // m, Chase/Search -> Capture proximity trigger
+  hidingSpotCheckCount: 2,        // nearest hiding spots Search evaluates, AI_SYSTEM §4
+  captureSequenceSeconds: 2       // non-interactive beat before Capture -> Patrol
+}
+```
+
 Player movement constants (not difficulty-scoped — only Putli's own speed/senses vary by preset above; illustrative defaults, tunable during playtesting per [[TESTING]] §4):
 
 ```js
@@ -85,7 +99,10 @@ PLAYER_MOVEMENT = {
   staminaRegenPerSec: 12.5,
   staminaMinToSprint: 5,   // sprint cannot start below this; can continue until 0
   mouseSensitivity: 0.15,  // deg per pixel at the persisted settings.controls.mouseSensitivity default of 1.0 (see §2)
-  maxPitchDeg: 85          // camera pitch clamp, prevents look-axis flip
+  maxPitchDeg: 85,         // camera pitch clamp, prevents look-axis flip
+  crouchNoiseRadius: 1.5,  // m, how far Putli's hearing sensor can pick up this movement state
+  walkNoiseRadius: 4,      // (GAME_MECHANICS §3) — actual detection also capped by the active
+  sprintNoiseRadius: 8     // difficulty preset's hearingRadius above (AI_SYSTEM §3)
 }
 ```
 

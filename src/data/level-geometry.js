@@ -54,9 +54,9 @@ export const ROOM_LAYOUT = [
  * player controller's step-up climbs every step without dedicated ramp/stair collision code.
  */
 export const STAIRCASES = [
-  { id: 'basement-stairs', fromFloor: 'ground', toFloor: 'basement', base: { x: -3, z: -3 }, dir1: { x: 1, z: 0 }, dir2: { x: 0, z: 1 } },
-  { id: 'main-staircase', fromFloor: 'ground', toFloor: 'first', base: { x: 3, z: 3 }, dir1: { x: -1, z: 0 }, dir2: { x: 0, z: -1 } },
-  { id: 'stairwell', fromFloor: 'first', toFloor: 'roof', base: { x: -2.5, z: -2.5 }, dir1: { x: 1, z: 0 }, dir2: { x: 0, z: 1 } }
+  { id: 'basement-stairs', fromFloor: 'ground', toFloor: 'basement', baseRoomId: 'courtyard', topRoomId: 'stepwell', base: { x: -3, z: -3 }, dir1: { x: 1, z: 0 }, dir2: { x: 0, z: 1 } },
+  { id: 'main-staircase', fromFloor: 'ground', toFloor: 'first', baseRoomId: 'courtyard', topRoomId: 'library', base: { x: 3, z: 3 }, dir1: { x: -1, z: 0 }, dir2: { x: 0, z: -1 } },
+  { id: 'stairwell', fromFloor: 'first', toFloor: 'roof', baseRoomId: 'library', topRoomId: 'open-chhat', base: { x: -2.5, z: -2.5 }, dir1: { x: 1, z: 0 }, dir2: { x: 0, z: 1 } }
 ];
 
 /**
@@ -227,7 +227,7 @@ export function buildStaircaseGeometry(stair) {
     landing.x + 0.65, landing.y, landing.z + 0.65
   );
 
-  return { stair, steps, landingBox, topPosition: top };
+  return { stair, steps, landingBox, landingPosition: landing, topPosition: top };
 }
 
 /** Aggregates every room + staircase into render geometry and a flat collider list. */

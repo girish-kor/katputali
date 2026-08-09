@@ -21,13 +21,13 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 
 ## M2 — Putli AI
 
-- [ ] Implement the FSM skeleton (Idle/Patrol/Investigate/Chase/Search/Capture) per [[AI_SYSTEM]] §2, using the shared pattern in [[ARCHITECTURE]] §4
-- [ ] Bake navmesh from grey-box geometry, implement patrol-loop waypoints per [[LEVEL_DESIGN]] §8, [[AI_SYSTEM]] §5
-- [ ] Implement hearing and sight sensors, throttled tick per [[AI_SYSTEM]] §3
-- [ ] Implement Search-state hiding-spot check per [[AI_SYSTEM]] §4
-- [ ] Wire difficulty preset values from [[DATA_MODEL]] §4 (no hardcoded tuning values)
-- [ ] Unit tests for FSM transitions per [[TESTING]] §2
-- [ ] First playtest pass: is Putli detectable/evadable on grey-box alone (audio can be temp/placeholder)?
+- [x] Implement the FSM skeleton (Idle/Patrol/Investigate/Chase/Search/Capture) per [[AI_SYSTEM]] §2, using the shared pattern in [[ARCHITECTURE]] §4
+- [x] Derive a waypoint graph from grey-box geometry (no navmesh — see [[TECH_STACK]] §1's pathfinding-correction note), implement patrol-loop waypoints per [[LEVEL_DESIGN]] §8, [[AI_SYSTEM]] §5
+- [x] Implement hearing and sight sensors, throttled tick per [[AI_SYSTEM]] §3
+- [x] Implement Search-state hiding-spot check per [[AI_SYSTEM]] §4
+- [x] Wire difficulty preset values from [[DATA_MODEL]] §4 (no hardcoded tuning values)
+- [x] Unit tests for FSM transitions per [[TESTING]] §2
+- [x] First playtest pass: is Putli detectable/evadable on grey-box alone (audio can be temp/placeholder)?
 
 ## M3 — Inventory, Puzzles, Escape Routes
 

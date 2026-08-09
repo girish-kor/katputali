@@ -77,6 +77,20 @@ export function computeWorldMoveDirection(moveForward, moveRight, yawDeg) {
 }
 
 /**
+ * Steers a 2D position toward a target at a fixed speed, capped so it never overshoots.
+ * Shared kinematic-movement helper — used by both player-controller.js and ai-putli.js.
+ */
+export function stepToward(current, target, speed, dt) {
+  const dx = target.x - current.x;
+  const dz = target.z - current.z;
+  const dist = Math.hypot(dx, dz);
+  if (dist < 1e-6) return { x: current.x, z: current.z, arrived: true };
+  const step = Math.min(dist, speed * dt);
+  const t = step / dist;
+  return { x: current.x + dx * t, z: current.z + dz * t, arrived: step >= dist };
+}
+
+/**
  * Finds the highest walkable surface at (x,z) that the player can reach from currentFootY —
  * i.e. its top is at most stepHeight above currentFootY (so it can be climbed as a step-up
  * without dedicated ramp logic; PHYSICS §2), or any height at or below currentFootY (so descending
