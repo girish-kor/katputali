@@ -9,7 +9,7 @@ RunState = {
   difficulty: "easy" | "normal" | "hard",
   prahar: { current: 1..4, secondsRemaining: number },
   captures: 0..3,
-  nazar: { value: 0..100 },
+  nazar: { value: 0..100, hallucinating: bool, hallucinationSecondsRemaining: number },
   inventory: [ItemId, ...],       // max length 5, see GAME_MECHANICS §2
   notesReadThisRun: [NoteId, ...],
   routeProgress: {
@@ -23,6 +23,30 @@ RunState = {
 Reset in full on every "New Game" (no mid-run save/resume — see [[PRD]] §5.10, [[GDD]] §4).
 
 **M3 addition:** `baori.repaired` was missing from the original schema even though LEVEL_DESIGN §5's Baori chain has a distinct "repair pulley" step between collecting parts and lighting the torch — added here per [[CODING_RULES]] §6 before implementing.
+
+**M4 addition:** `nazar.hallucinating`/`hallucinationSecondsRemaining` were missing even though GAME_MECHANICS §5 describes an at-max "temporary hallucination state (data-driven duration)" — a state and a countdown are needed to actually drive that. Added per [[CODING_RULES]] §6 before implementing.
+
+## 1a. Config Data — Capture Struggle & Nazar Timing (M4)
+
+None of GAME_MECHANICS §4-5's illustrative mechanics ("fixed window," "fixed amount," "data-driven duration") had actual numbers recorded anywhere — added here before implementing, per [[CODING_RULES]] §6. Not difficulty-scoped (GAME_MECHANICS doesn't call these out as varying by preset, unlike AI_SYSTEM §6's sensor/speed values):
+
+```js
+CAPTURE_TIMING = {
+  struggleWindowSeconds: 5,              // QTE §4 — fixed window for the alternating-input struggle
+  struggleSuccessThreshold: 6,           // correct alternations needed within the window to break free
+  struggleFailurePraharPenaltySeconds: 30, // subtracted from Prahar secondsRemaining on the 2nd failure
+  respawnInvulnerabilitySeconds: 5       // post-respawn window where Putli's sight/hearing can't re-detect the player
+}
+
+NAZAR_TIMING = {
+  fillPerSecond: 0.15,           // passive rise; ~11 real minutes to fill from 0 alone
+  taintedRoomIncrement: 15,      // fixed bump entering courtyard puppet-stage or Sohni Bai's room, first visit/run
+  wardMitigation: 30,            // fixed reduction per ward item used
+  max: 100,
+  hallucinationSeconds: 8,       // at-max penalty duration — visual/audio only, no sensor/hitbox effect
+  baselineAfterPenalty: 40       // meter resets here (not 0) after the hallucination ends, so it can recur
+}
+```
 
 ## 2. Persisted Data — Settings
 

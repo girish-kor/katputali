@@ -23,7 +23,8 @@ export function createPlayerController(app, entity, cameraEntity, geometry, spaw
     isSprinting: false,
     verticalVelocity: 0,
     stamina: PLAYER_MOVEMENT.staminaMax,
-    hiding: createHidingState()
+    hiding: createHidingState(),
+    frozen: false // capture cutscene/struggle (GAME_MECHANICS §4) — movement/look disabled, transform untouched
   };
 
   const canvas = app.graphicsDevice.canvas;
@@ -34,7 +35,7 @@ export function createPlayerController(app, entity, cameraEntity, geometry, spaw
   });
 
   app.mouse.on('mousemove', (e) => {
-    if (!Mouse.isPointerLocked()) return;
+    if (!Mouse.isPointerLocked() || state.frozen) return;
     const desiredYaw = state.yaw - e.dx * PLAYER_MOVEMENT.mouseSensitivity;
     state.yaw = state.hiding.isHiding
       ? clampPeekYaw(state.hiding.enterYaw, desiredYaw, PLAYER_MOVEMENT.peekMaxYawDeg)
@@ -44,6 +45,8 @@ export function createPlayerController(app, entity, cameraEntity, geometry, spaw
   });
 
   function update(dt) {
+    if (state.frozen) return; // capture cutscene/struggle — no movement, no transform sync needed
+
     if (state.hiding.isHiding) {
       entity.setPosition(state.position.x, state.position.y, state.position.z);
       entity.setEulerAngles(0, state.yaw, 0);

@@ -47,3 +47,21 @@ export const AI_TIMING = {
 
 /** GAME_MECHANICS §3 — a noise trap's fixed emission radius, deliberately louder than sprint. */
 export const NOISE_TRAP_RADIUS = 10;
+
+/** GAME_MECHANICS §4 — not difficulty-scoped, see DATA_MODEL §1a. */
+export const CAPTURE_TIMING = {
+  struggleWindowSeconds: 5,
+  struggleSuccessThreshold: 6,
+  struggleFailurePraharPenaltySeconds: 30,
+  respawnInvulnerabilitySeconds: 5
+};
+
+/** GAME_MECHANICS §5 — not difficulty-scoped, see DATA_MODEL §1a. */
+export const NAZAR_TIMING = {
+  fillPerSecond: 0.15,
+  taintedRoomIncrement: 15,
+  wardMitigation: 30,
+  max: 100,
+  hallucinationSeconds: 8,
+  baselineAfterPenalty: 40
+};

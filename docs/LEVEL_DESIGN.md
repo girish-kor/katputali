@@ -92,6 +92,8 @@ All three chains are solvable independently and in any order; no chain requires 
 
 Fixed set of 7: 4 courtyard pillars (Room 2), Guard Room almirah (Room 5), Family Shrine jaali screen (Room 11), Stepwell alcove (Room 6). Distribution ensures every floor has at least one hiding spot reachable within a short sprint of any point on that floor (validated per [[TESTING]] §4).
 
+**M4 addition — safe re-entry rooms:** GAME_MECHANICS §4 requires respawning at "the nearest of a fixed set of safe re-entry rooms" after a successful struggle, but no set was ever specified. Fixed set (one per general area, so every part of the haveli has a nearby option): Entrance Hall (Room 1, ground), Guard Room (Room 5, ground), Library (Room 10, first floor), Stepwell (Room 6, basement). "Nearest" excludes wherever the capture actually happened (straight-line distance from that point), not the courtyard cage itself — the cage is only the struggle's cutscene staging location (SCENARIO §4), not necessarily where Chase caught the player. Recorded here per [[CODING_RULES]] §6 before implementing.
+
 **Grey-box positions (M2, world coordinates matching `/src/data/level-geometry.js`):** courtyard pillars at (4,0,4), (-4,0,4), (4,0,-4), (-4,0,-4); Guard Room almirah at (8.5,0,1); Family Shrine jaali screen at (1,3.3,6.5); Stepwell alcove at (4,-3.3,-4) — each a ~0.5m-radius spot, chosen clear of the staircase footprints and door gaps recorded in that file. Full pickup/peek interaction lands in M3 (see [[GAME_MECHANICS]] §3); M2 only needs these positions for Putli's Search-state proximity check (see [[AI_SYSTEM]] §4).
 
 ## 8. Putli's Patrol Routes

@@ -100,6 +100,28 @@ export function getRoomBounds(room) {
   };
 }
 
+/**
+ * Finds which room a world position is currently "in" — the room whose XZ footprint contains
+ * the point, disambiguating overlapping floors (see level-geometry's module doc) by picking the
+ * one whose floorY is closest to the position's Y. Returns null if outside every room (e.g.
+ * mid-staircase). Used by nazar-meter's tainted-room trigger and capture-struggle's respawn logic.
+ */
+export function findCurrentRoom(position, roomLayout = ROOM_LAYOUT) {
+  let best = null;
+  let bestYDist = Infinity;
+  for (const room of roomLayout) {
+    const bounds = getRoomBounds(room);
+    if (position.x < bounds.minX || position.x > bounds.maxX) continue;
+    if (position.z < bounds.minZ || position.z > bounds.maxZ) continue;
+    const yDist = Math.abs(position.y - bounds.floorY);
+    if (yDist < bestYDist) {
+      bestYDist = yDist;
+      best = room;
+    }
+  }
+  return best;
+}
+
 /** Floor slab + wall segments (with door gaps/headers) for one room. */
 export function buildRoomGeometry(room) {
   const h = SIZE_CLASSES[room.sizeClass];

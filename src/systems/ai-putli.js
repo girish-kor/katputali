@@ -78,6 +78,10 @@ function sensorTick(ctx, dt) {
   ctx.sensorAccumMs = 0;
 
   const playerPos = ctx.getPlayerPosition();
+  // Post-capture respawn grace window (GAME_MECHANICS §4) — no detection at all, prevents a
+  // "spawn camped" instant re-capture right after being released.
+  if (ctx.isPlayerInvulnerable()) return { checked: true, heard: false, seen: false, playerPos };
+
   const preset = ctx.getDifficultyPreset();
   const heard = checkHearing(ctx.position, playerPos, ctx.getPlayerNoiseRadius(), preset.hearingRadius);
   // A hidden player is untargetable by sight but still audible if noisy (GAME_MECHANICS §3).
@@ -225,9 +229,10 @@ const states = {
 /**
  * Creates Putli's FSM instance (AI_SYSTEM §2). `deps` supplies the world-facing hooks:
  * getPlayerPosition, getPlayerNoiseRadius, getDifficultyPreset, isPlayerHiding (global
- * untargetable-by-sight check) and isPlayerHidingAt (per-spot check for the Search-state
- * discovery roll) — both default false until wired to a real hiding system, geometry (from
- * level.js), spawn position, and an optional `random` source for deterministic tests.
+ * untargetable-by-sight check), isPlayerHidingAt (per-spot check for the Search-state discovery
+ * roll), and isPlayerInvulnerable (post-respawn grace window, GAME_MECHANICS §4 — suppresses
+ * both sensors entirely) — all default false until wired to their real systems. Also geometry
+ * (from level.js), spawn position, and an optional `random` source for deterministic tests.
  */
 export function createPutli(deps) {
   const graph = buildNavigationGraph();
@@ -242,6 +247,7 @@ export function createPutli(deps) {
     getPlayerNoiseRadius: deps.getPlayerNoiseRadius,
     getDifficultyPreset: deps.getDifficultyPreset,
     isPlayerHiding: deps.isPlayerHiding ?? (() => false),
+    isPlayerInvulnerable: deps.isPlayerInvulnerable ?? (() => false),
     isPlayerHidingAt: deps.isPlayerHidingAt ?? (() => false),
     sensorAccumMs: 0,
     currentLoop: null,

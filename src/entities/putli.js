@@ -7,7 +7,7 @@ import { DIFFICULTY_PRESETS, DEFAULT_DIFFICULTY, PLAYER_MOVEMENT } from '../data
  * see CHARACTERS §2) driven each frame by the ai-putli FSM. Per ARCHITECTURE §2's
  * entity-setup-helper convention.
  */
-export function createPutliEntity(app, geometry, player, spawn) {
+export function createPutliEntity(app, geometry, player, spawn, captureFlow) {
   const root = new Entity('putli');
   root.addComponent('render', { type: 'capsule' });
   const material = new StandardMaterial();
@@ -30,7 +30,8 @@ export function createPutliEntity(app, geometry, player, spawn) {
     },
     getDifficultyPreset: () => DIFFICULTY_PRESETS[DEFAULT_DIFFICULTY],
     isPlayerHiding: () => player.controller.state.hiding.isHiding,
-    isPlayerHidingAt: (spotId) => player.controller.state.hiding.isHiding && player.controller.state.hiding.spotId === spotId
+    isPlayerHidingAt: (spotId) => player.controller.state.hiding.isHiding && player.controller.state.hiding.spotId === spotId,
+    isPlayerInvulnerable: () => captureFlow.invulnerableSecondsRemaining > 0
   });
 
   function update(dt) {

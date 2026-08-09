@@ -72,6 +72,16 @@ describe('ai-putli FSM transitions', () => {
     expect(putli.state).toBe('patrol');
   });
 
+  it('an invulnerable (just-respawned) player is undetectable by both sensors (GAME_MECHANICS §4)', () => {
+    const deps = makeDeps({ getPlayerNoiseRadius: () => 20, isPlayerInvulnerable: () => true });
+    const putli = createPutli(deps);
+    putli.forceState('patrol');
+    putli.ctx.yaw = 0;
+    deps.setPlayerPosition({ x: 0, y: 0, z: -1 }); // dead ahead, point-blank, loud
+    putli.update(TICK);
+    expect(putli.state).toBe('patrol');
+  });
+
   it('Chase -> Capture when it closes to capture radius', () => {
     const deps = makeDeps();
     const putli = createPutli(deps);

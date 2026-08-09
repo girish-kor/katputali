@@ -43,13 +43,13 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 
 ## M4 — Capture Loop, Nazar, Prahar, Win/Lose
 
-- [ ] Implement `capture-struggle` system: QTE input validation, success/failure branching, respawn logic per [[GAME_MECHANICS]] §4, [[CONTROLS]] §4
-- [ ] Implement `nazar-meter` fill/mitigate/penalty logic per [[GAME_MECHANICS]] §5
-- [ ] Implement `prahar-timer` countdown, penalty application, Prahar-5 loss trigger per [[GAME_MECHANICS]] §6
-- [ ] Wire all 4 endings (3 win + Bound) per [[STORY]] §5, [[SCENARIO]] §5–6
-- [ ] Implement `save-manager` (`localStorage` settings + notes log) per [[DATA_MODEL]] §2–3
-- [ ] Unit tests for capture-struggle, nazar-meter, prahar-timer, save-manager per [[TESTING]] §2
-- [ ] Full playtest: complete a run start-to-finish on grey-box for each ending
+- [x] Implement `capture-struggle` system: QTE input validation, success/failure branching, respawn logic per [[GAME_MECHANICS]] §4, [[CONTROLS]] §4
+- [x] Implement `nazar-meter` fill/mitigate/penalty logic per [[GAME_MECHANICS]] §5
+- [x] Implement `prahar-timer` countdown, penalty application, Prahar-5 loss trigger per [[GAME_MECHANICS]] §6
+- [x] Wire all 4 endings (3 win + Bound) per [[STORY]] §5, [[SCENARIO]] §5–6
+- [x] Implement `save-manager` (`localStorage` settings + notes log) per [[DATA_MODEL]] §2–3
+- [x] Unit tests for capture-struggle, nazar-meter, prahar-timer, save-manager per [[TESTING]] §2
+- [x] Full playtest: complete a run start-to-finish on grey-box for each ending
 
 ## M5 — Art Pass
 

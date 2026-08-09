@@ -4,6 +4,7 @@ import {
   getRoomBounds,
   buildLevelGeometry,
   buildDoors,
+  findCurrentRoom,
   DOOR_PAIRS,
   DOOR_WIDTH
 } from './level-geometry.js';
@@ -98,5 +99,24 @@ describe('level-geometry: performance budget (grey-box baseline, PERFORMANCE §1
     expect(wallColliders.length).toBeGreaterThan(0);
     expect(wallColliders.length).toBeLessThan(1000);
     expect(stairSteps.length).toBe(3 * (10 + 10 + 1));
+  });
+});
+
+describe('findCurrentRoom', () => {
+  it('finds the room whose footprint contains the position', () => {
+    const room = findCurrentRoom({ x: 7.5, y: 0, z: 0 });
+    expect(room.id).toBe('guard-room');
+  });
+
+  it('disambiguates overlapping-XZ floors by nearest floorY', () => {
+    // courtyard (ground, y=0) and stepwell (basement, y=-3.3) and library (first, y=3.3) all
+    // share the (0,0) XZ footprint by design (see the module doc) — Y must disambiguate.
+    expect(findCurrentRoom({ x: 0, y: 0, z: 0 }).id).toBe('courtyard');
+    expect(findCurrentRoom({ x: 0, y: -3.3, z: 0 }).id).toBe('stepwell');
+    expect(findCurrentRoom({ x: 0, y: 3.3, z: 0 }).id).toBe('library');
+  });
+
+  it('returns null outside every room footprint', () => {
+    expect(findCurrentRoom({ x: 500, y: 0, z: 500 })).toBeNull();
   });
 });
