@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { KEY_A, KEY_D, KEY_V } from 'playcanvas';
+import { KEY_V } from 'playcanvas';
 import { createRunManager } from './run-state.js';
 import { createInventory } from './inventory.js';
 import { CAPTURE_TIMING, NAZAR_TIMING, DIFFICULTY_PRESETS } from '../data/difficulty-presets.js';
@@ -12,6 +12,20 @@ function makeKeyboard() {
     wasPressed(key) {
       const was = pressedThisFrame.has(key);
       pressedThisFrame.delete(key); // edge-triggered, like the real PlayCanvas keyboard
+      return was;
+    }
+  };
+}
+
+/** Mirrors input-map.js's isDown/wasPressed contract, action-keyed instead of raw key codes. */
+function makeInputMap() {
+  const pressedThisFrame = new Set();
+  return {
+    press(action) { pressedThisFrame.add(action); },
+    isDown() { return false; },
+    wasPressed(action) {
+      const was = pressedThisFrame.has(action);
+      pressedThisFrame.delete(action);
       return was;
     }
   };
@@ -42,15 +56,16 @@ describe('capture -> struggle -> success releases with no penalty', () => {
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     events.emit('putli:capture', { position: { x: 1, y: 0, z: 1 } });
     expect(player.controller.state.frozen).toBe(true);
     expect(run.struggle.active).toBe(true);
 
     for (let i = 0; i < CAPTURE_TIMING.struggleSuccessThreshold; i++) {
-      keyboard.press(i % 2 === 0 ? KEY_A : KEY_D);
+      inputMap.press(i % 2 === 0 ? 'struggleLeft' : 'struggleRight');
       run.update(0.1);
     }
 
@@ -65,8 +80,9 @@ describe('capture -> struggle -> fail once -> automatic retry -> fail again -> r
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     events.emit('putli:capture', { position: { x: 1, y: 0, z: 1 } });
     const praharBefore = run.prahar.secondsRemaining;
@@ -89,8 +105,9 @@ describe('3rd capture is immediately fatal — no struggle chance', () => {
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     let endedPayload = null;
     events.on('game:ended', (p) => { endedPayload = p; });
@@ -116,8 +133,9 @@ describe('route:completed triggers the matching ending', () => {
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     events.emit('route:completed', { route });
     expect(run.state.ended).toBe(true);
@@ -129,8 +147,9 @@ describe('route:completed triggers the matching ending', () => {
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     events.emit('route:completed', { route: 'gate' });
     events.emit('route:completed', { route: 'baori' });
@@ -143,8 +162,9 @@ describe('Prahar-5 loss triggers the Bound ending', () => {
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, difficulty: 'normal', storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, difficulty: 'normal', storage: makeStorage() });
 
     run.prahar.current = 4;
     run.prahar.secondsRemaining = 0.5;
@@ -160,8 +180,9 @@ describe('Nazar: tainted-room entry and the M4 ward-mitigation shortcut', () => 
     const player = makePlayer({ x: 0, y: 0, z: 0 }); // courtyard, isHighNazar
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     run.update(0.01);
     expect(run.nazar.value).toBeCloseTo(NAZAR_TIMING.taintedRoomIncrement, 1);
@@ -171,9 +192,10 @@ describe('Nazar: tainted-room entry and the M4 ward-mitigation shortcut', () => 
     const player = makePlayer({ x: 100, y: 0, z: 100 }); // outside any room, no tainted bump
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
     world.inventory.addItem('ward_neem_guard_room');
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
     run.nazar.value = 50;
 
     keyboard.press(KEY_V);
@@ -187,8 +209,9 @@ describe('Nazar: tainted-room entry and the M4 ward-mitigation shortcut', () => 
     const player = makePlayer({ x: 100, y: 0, z: 100 });
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
     run.nazar.value = 50;
 
     keyboard.press(KEY_V);
@@ -203,12 +226,13 @@ describe('isPlayerInvulnerable: post-respawn grace window', () => {
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     events.emit('putli:capture', { position: { x: 1, y: 0, z: 1 } });
     for (let i = 0; i < CAPTURE_TIMING.struggleSuccessThreshold; i++) {
-      keyboard.press(i % 2 === 0 ? KEY_A : KEY_D);
+      inputMap.press(i % 2 === 0 ? 'struggleLeft' : 'struggleRight');
       run.update(0.1);
     }
 
@@ -221,8 +245,9 @@ describe('isPlayerInvulnerable: post-respawn grace window', () => {
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
     expect(run.isPlayerInvulnerable()).toBe(false);
   });
 });
@@ -232,13 +257,14 @@ describe('never drops a key item on capture release (regression: dropRandomNonKe
     const player = makePlayer();
     const putli = makePutli();
     const keyboard = makeKeyboard();
+    const inputMap = makeInputMap();
     const world = makeWorld();
     world.inventory.addItem('key_fragment_kitchen');
-    const run = createRunManager({ player, putli, keyboard, world, storage: makeStorage() });
+    const run = createRunManager({ player, putli, keyboard, inputMap, world, storage: makeStorage() });
 
     events.emit('putli:capture', { position: { x: 1, y: 0, z: 1 } });
     for (let i = 0; i < CAPTURE_TIMING.struggleSuccessThreshold; i++) {
-      keyboard.press(i % 2 === 0 ? KEY_A : KEY_D);
+      inputMap.press(i % 2 === 0 ? 'struggleLeft' : 'struggleRight');
       run.update(0.1);
     }
 

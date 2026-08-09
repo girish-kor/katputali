@@ -48,6 +48,16 @@ Findings are logged as GitHub Issues, prioritized against the [[FEATURES]] MoSCo
 - Verify HUD legibility under Deuteranopia/Protanopia/Tritanopia simulation (free browser dev-tool vision simulators) with the colorblind-safe toggle on and off.
 - Verify full rebinding works for both keyboard and gamepad with no unreachable actions (see [[CONTROLS]] §3).
 
+### 5.1 Automated coverage (M6 pass)
+
+The three checks above are now backed by regression tests so they can't silently drift, rather than relying purely on a one-off manual pass:
+
+- **Caption coverage** — `ui/captions-format.test.js` asserts every state in `audio-manager.js`'s `PUTLI_TELL_STATES` (the states that actually get a Putli audio tell) resolves to a non-null caption, so a state gaining a new tell without a caption fails CI.
+- **Colorblind/contrast simulation** — `ui/accessibility-format.js`/`.test.js` compute real WCAG 1.4.11 contrast ratios for both the normal and colorblind-safe HUD accent pairs against the panel background (both must clear 3:1), plus a lightweight linear-RGB approximation of protanopia/deuteranopia/tritanopia (the commonly-used simplified Brettel/Coblis-style matrices) verifying the colorblind-safe pair is never *less* distinguishable than the normal pair under any of the three, and stays above an absolute minimum distinguishable distance. This is an approximation, not a substitute for a real device/browser vision-simulator screenshot check — that manual pass is still worth doing before a tagged release (§7), but the automated version catches an accidental bad color choice immediately instead of only at the next manual pass. Running this test suite for the first time is what caught two real bugs, fixed in the same change: the shipped vermillion HUD accent (`#B33A2E`) only cleared a 2.36:1 contrast against its background (below the 3:1 minimum), and an earlier colorblind-safe gold/blue pairing was *less* distinguishable than the normal palette under simulated tritanopia specifically (a yellow-vs-blue pair is close to the exact axis tritanopia impairs).
+- **Rebind reachability** — `systems/rebind-format.test.js` asserts the default keyboard and gamepad binding maps have no unintended conflicts (the one intentional exception — Struggle QTE reusing the Move keys, since the two are never active at once — is named explicitly rather than silently excluded) and that every action can be rebound to a free input.
+
+A genuine manual pass (actual browser vision-simulator extension, real keyboard+gamepad hardware in hand) is still the authoritative check before a tagged release — see §7 — the automated tests above exist to catch regressions between manual passes, not replace the final one.
+
 ## 6. Performance Testing
 
 See [[PERFORMANCE]] §5 for the authoritative profiling plan — repeated at the end of each milestone from M1 onward, using PlayCanvas's built-in profiler plus a manual device sweep before release.

@@ -25,8 +25,27 @@ function el(tag, className, parent) {
  * M5 Art Pass work; this ships the structure, layout, and live data binding now since none of
  * that depends on final art.
  */
-export function createHud({ player, runManager, world }) {
+export function createHud({ player, runManager, world, difficultyId = null }) {
   const root = el('div', 'hud', document.body);
+
+  // Colorblind-safe HUD accent (UI_UX §6), live-toggleable from the Settings screen.
+  let settings = loadSettings();
+  root.classList.toggle('hud-colorblind', settings.accessibility.colorblindSafeHUD);
+  on('settings:changed', (next) => {
+    settings = next;
+    root.classList.toggle('hud-colorblind', settings.accessibility.colorblindSafeHUD);
+  });
+
+  // Danger vignette (UI_UX §6) — a non-motion visual cue that stays present even with camera
+  // shake all the way down (see player-controller.js's shakeIntensity gate), so "some visual
+  // feedback must remain" holds regardless of the motion-sensitivity slider.
+  const vignette = el('div', 'hud-vignette', root);
+  on('putli:state-changed', ({ from, to }) => {
+    if (to === 'chase') vignette.classList.add('hud-vignette-active');
+    else if (from === 'chase') vignette.classList.remove('hud-vignette-active');
+  });
+  on('putli:capture', () => vignette.classList.add('hud-vignette-active'));
+  on('capture:resolved', () => vignette.classList.remove('hud-vignette-active'));
 
   const prahar = el('div', 'hud-corner hud-top-right hud-prahar', root);
   const captures = el('div', 'hud-corner hud-top-right hud-captures', root);
@@ -50,6 +69,25 @@ export function createHud({ player, runManager, world }) {
   const endTitle = el('h1', 'hud-end-title', endScreen);
   const endStats = el('div', 'hud-end-stats', endScreen);
 
+  // Buttons: Retry / Title Screen (UI_UX §5). Neither system supports tearing down and rebuilding
+  // the gameplay entity graph in place (event-bus listeners registered via on() have no
+  // consistent unsubscribe path — see ARCHITECTURE §3), so both reload the page, the same
+  // approach main.js's Pause -> Quit to Title uses. Retry additionally stashes the run's
+  // difficulty in sessionStorage so main.js can skip straight back into a fresh run at the same
+  // difficulty instead of re-showing Title/Difficulty Select (PRD §5.10: no save-slot/continue,
+  // but re-picking the same difficulty every retry would be needless friction).
+  const endButtons = el('div', 'hud-screen-menu', endScreen);
+  const retryBtn = el('button', 'hud-button hud-button-primary', endButtons, 'Retry');
+  const titleBtn = el('button', 'hud-button hud-button-secondary', endButtons, 'Title Screen');
+  retryBtn.addEventListener('click', () => {
+    if (difficultyId) sessionStorage.setItem('katputali:retry-difficulty', difficultyId);
+    window.location.reload();
+  });
+  titleBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('katputali:retry-difficulty');
+    window.location.reload();
+  });
+
   on('game:ended', (payload) => {
     endTitle.textContent = endingTitle(payload.ending);
     endStats.textContent =
@@ -59,14 +97,13 @@ export function createHud({ player, runManager, world }) {
 
   // Captions for Putli's state tells, capture, and Nazar hallucination — UI_UX §6/AUDIO §5's
   // hard accessibility requirement that every state-defining audio cue also be readable as text.
-  // Gated by the existing captions setting (DATA_MODEL §2, default true); read once here since
-  // there's no live Settings screen yet to change it mid-session (separate M6 task).
-  const captionsEnabled = loadSettings().accessibility.captions;
+  // Gated by the captions setting (DATA_MODEL §2, default true), read live via `settings` above
+  // so toggling it in the Settings screen takes effect immediately, mid-run.
   const caption = el('div', 'hud-center hud-caption hud-hidden', root);
   let captionClearAtMs = 0;
 
   function showCaption(text) {
-    if (!captionsEnabled || !text) return;
+    if (!settings.accessibility.captions || !text) return;
     caption.textContent = text;
     caption.classList.remove('hud-hidden');
     captionClearAtMs = performance.now() + CAPTION_DISPLAY_MS;

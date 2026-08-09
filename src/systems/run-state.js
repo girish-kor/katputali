@@ -1,4 +1,4 @@
-import { KEY_A, KEY_D, KEY_V } from 'playcanvas';
+import { KEY_V } from 'playcanvas';
 import { on, emit } from '../core/events.js';
 import {
   createCaptureState, beginCapture,
@@ -24,7 +24,8 @@ const ROOMS_BY_ID = new Map(ROOMS.map(r => [r.id, r]));
  * ticking.
  */
 export function createRunManager({
-  player, putli, keyboard, world, difficulty = DEFAULT_DIFFICULTY, storage,
+  player, putli, keyboard, inputMap = { isDown: () => false, wasPressed: () => false },
+  world, difficulty = DEFAULT_DIFFICULTY, storage,
   captureFlow = { invulnerableSecondsRemaining: 0 }
 }) {
   const preset = DIFFICULTY_PRESETS[difficulty];
@@ -97,8 +98,8 @@ export function createRunManager({
 
   function updateStruggleInput() {
     if (!struggle.active) return;
-    if (keyboard.wasPressed(KEY_A)) registerStruggleInput(struggle, 'left');
-    if (keyboard.wasPressed(KEY_D)) registerStruggleInput(struggle, 'right');
+    if (inputMap.wasPressed('struggleLeft')) registerStruggleInput(struggle, 'left');
+    if (inputMap.wasPressed('struggleRight')) registerStruggleInput(struggle, 'right');
   }
 
   function updateWardShortcut() {

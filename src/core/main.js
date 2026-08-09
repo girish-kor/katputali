@@ -10,9 +10,17 @@ import { createInteractableHandler } from '../systems/interactable-handler.js';
 import { createNoiseTrapTracker } from '../systems/noise-traps.js';
 import { createRunManager } from '../systems/run-state.js';
 import { createAudioManager } from '../systems/audio-manager.js';
+import { createInputMap } from '../systems/input-map.js';
+import { loadSettings } from '../systems/save-manager.js';
 import { createHud } from '../ui/hud.js';
+import { createTitleScreen } from '../ui/title-screen.js';
+import { createDifficultySelectScreen } from '../ui/difficulty-select-screen.js';
+import { createSettingsScreen } from '../ui/settings-screen.js';
+import { createPauseScreen } from '../ui/pause-screen.js';
 import { INTERACTABLES } from '../data/interactables.js';
-import { NOISE_TRAP_RADIUS, DEFAULT_DIFFICULTY } from '../data/difficulty-presets.js';
+import { ITEMS_BY_ID } from '../data/items.js';
+import { NOISE_TRAP_RADIUS } from '../data/difficulty-presets.js';
+import { findCurrentRoom } from '../data/level-geometry.js';
 import { emit } from '../core/events.js';
 
 const canvas = document.getElementById('app-canvas');
@@ -72,44 +80,131 @@ app.root.addChild(entranceDiya);
 
 const { geometry } = buildLevel(app);
 
-const player = createPlayer(app, geometry, { x: 0, y: 0, z: -8, yaw: 180 });
+// Shared keyboard/gamepad input, driven by settings.controls (CONTROLS §3's full-rebinding
+// requirement) — created once, before any screen, since both the Settings screen's gamepad
+// rebind-capture and gameplay itself read live gamepad state independently.
+const inputMap = createInputMap({ getSettings: loadSettings });
 
-// Shared with run-state.js, which owns writing to it on respawn (GAME_MECHANICS §4's
-// post-capture grace window) — created before Putli since ai-putli reads it every sensor tick.
-const captureFlow = { invulnerableSecondsRemaining: 0 };
-const putli = createPutliEntity(app, geometry, player, { x: 0, y: 0, z: 0 }, captureFlow);
+// --- Screen flow (UI_UX §1) ---------------------------------------------------------------
+// The level/lighting render immediately behind the Title screen (atmospheric, no separate
+// loading asset to wait on); gameplay entities (player/Putli/run manager/HUD/audio) are only
+// built once Difficulty Select confirms a run, per UI_UX §1's Title -> New Game -> Difficulty
+// Select -> (brief loading) -> In-Game flow. Esc -> Pause freezes the gameplay tick entirely
+// (CONTROLS §1: "mid-run pausing does freeze AI/timer").
 
-const { entities: interactableEntities } = createInteractableEntities(app);
-const interactableHandler = createInteractableHandler(() => player.controller.state, interactableEntities);
+let gameplay = null; // set by startGame(); null before the first run and never re-created (Quit to Title reloads)
+let paused = false;
+let currentDifficulty = null;
 
-const noiseTraps = createNoiseTrapTracker(
-  INTERACTABLES.filter(it => it.type === 'noiseTrap').map(it => ({ id: it.id, position: it.position, radius: 1 }))
-);
-
-const runManager = createRunManager({
-  player,
-  putli,
-  keyboard: app.keyboard,
-  world: interactableHandler.world,
-  difficulty: DEFAULT_DIFFICULTY,
-  captureFlow
+const titleScreen = createTitleScreen({
+  onNewGame: () => { titleScreen.hide(); difficultyScreen.show(); },
+  onSettings: () => settingsScreen.open(() => { settingsScreen.close(); titleScreen.show(); })
 });
 
-const hud = createHud({ player, runManager, world: interactableHandler.world });
-const audioManager = createAudioManager({ app, putliRoot: putli.root });
+const difficultyScreen = createDifficultySelectScreen({
+  onSelect: (difficultyId) => { difficultyScreen.hide(); startGame(difficultyId); },
+  onBack: () => { difficultyScreen.hide(); titleScreen.show(); }
+});
+
+const settingsScreen = createSettingsScreen();
+
+const pauseScreen = createPauseScreen({
+  onResume: () => resumeGame(),
+  onSettings: () => {
+    pauseScreen.hide();
+    settingsScreen.open(() => {
+      settingsScreen.close();
+      pauseScreen.show();
+    }, () => currentDifficulty);
+  },
+  onQuitToTitle: () => window.location.reload() // simplest reliable full reset of PlayCanvas/game state
+});
+
+function resumeGame() {
+  paused = false;
+  pauseScreen.hide();
+  if (!Mouse.isPointerLocked()) app.mouse.enablePointerLock();
+}
+
+function pauseGame() {
+  paused = true;
+  pauseScreen.show();
+  if (Mouse.isPointerLocked()) document.exitPointerLock();
+}
+
+function startGame(difficultyId) {
+  currentDifficulty = difficultyId;
+
+  const player = createPlayer(app, geometry, { x: 0, y: 0, z: -8, yaw: 180 }, inputMap);
+
+  // Shared with run-state.js, which owns writing to it on respawn (GAME_MECHANICS §4's
+  // post-capture grace window) — created before Putli since ai-putli reads it every sensor tick.
+  const captureFlow = { invulnerableSecondsRemaining: 0 };
+  const putli = createPutliEntity(app, geometry, player, { x: 0, y: 0, z: 0 }, captureFlow);
+
+  const { entities: interactableEntities } = createInteractableEntities(app);
+  const interactableHandler = createInteractableHandler(() => player.controller.state, interactableEntities);
+
+  const noiseTraps = createNoiseTrapTracker(
+    INTERACTABLES.filter(it => it.type === 'noiseTrap').map(it => ({ id: it.id, position: it.position, radius: 1 }))
+  );
+
+  const runManager = createRunManager({
+    player,
+    putli,
+    keyboard: app.keyboard,
+    inputMap,
+    world: interactableHandler.world,
+    difficulty: difficultyId,
+    captureFlow
+  });
+
+  const hud = createHud({ player, runManager, world: interactableHandler.world, difficultyId });
+  const audioManager = createAudioManager({
+    app,
+    putliRoot: putli.root,
+    getPlayerRoomId: () => findCurrentRoom(player.controller.state.position)?.id ?? null
+  });
+
+  gameplay = { player, putli, interactableHandler, noiseTraps, runManager, hud, audioManager };
+}
+
+// A Retry from the End Screen (UI_UX §5) reloads the page and stashes the run's difficulty here
+// so play resumes immediately instead of re-showing Title/Difficulty Select.
+const retryDifficulty = sessionStorage.getItem('katputali:retry-difficulty');
+if (retryDifficulty) {
+  sessionStorage.removeItem('katputali:retry-difficulty');
+  startGame(retryDifficulty);
+} else {
+  titleScreen.show();
+}
 
 app.on('update', dt => {
-  player.update(dt);
-  putli.update(dt);
-  runManager.update(dt);
+  inputMap.update();
 
-  const triggered = noiseTraps.update(player.controller.state.position);
+  if (gameplay && !gameplay.runManager.state.ended && inputMap.wasPressed('pause')) {
+    if (paused) resumeGame();
+    else pauseGame();
+  }
+
+  if (!gameplay || paused) return;
+
+  gameplay.player.update(dt);
+  gameplay.putli.update(dt);
+  gameplay.runManager.update(dt);
+
+  if (inputMap.wasPressed('drop')) {
+    const dropped = gameplay.interactableHandler.world.inventory.dropMostRecentNonKeyItem(ITEMS_BY_ID);
+    if (dropped) emit('inventory:changed', { slots: gameplay.interactableHandler.world.inventory.getSlots() });
+  }
+
+  const triggered = gameplay.noiseTraps.update(gameplay.player.controller.state.position);
   for (const trap of triggered) {
     emit('noise:emitted', { position: trap.position, radius: NOISE_TRAP_RADIUS });
   }
 
-  audioManager.update(dt, player.controller.state);
-  hud.update();
+  gameplay.audioManager.update(dt, gameplay.player.controller.state);
+  gameplay.hud.update();
 });
 
 app.start();
