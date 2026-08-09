@@ -22,6 +22,8 @@ Single-location layout: Haveli Kesar Mahal. This doc is the authoritative room l
 
 Each room includes size class (S/M/L, relative footprint for scale/perf planning — see [[PERFORMANCE]] §2), purpose, and notable contents.
 
+**Grey-box scale (M1):** S = 4m×4m, M = 7m×7m, L = 11m×11m footprint, 3m ceiling height per floor, 0.3m wall/floor slab thickness, 1.3m×2.2m door openings — sized comfortably above the player capsule (see [[PHYSICS]] §2) and adequate for a future navmesh agent radius (see [[AI_SYSTEM]] §8). Floor-to-floor vertical offset is 3.3m (basement floor at y=-3.3, ground at y=0, first floor at y=3.3, rooftop deck at y=6.6). Exact per-room world coordinates live in code (`/src/data/level-geometry.js`) as the implementation-level source of truth, not duplicated here — this doc remains authoritative for room list, sizing class, and connectivity.
+
 ### Ground Floor
 | # | Room | Size | Purpose | Contents |
 |---|---|---|---|---|

@@ -67,6 +67,28 @@ DIFFICULTY_PRESETS = {
 ```
 Player-side constants (stamina drain/regen rate, sprint/crouch/walk noise-radius multipliers, capture struggle window length and success threshold) live in the same config module, also difficulty-scoped where relevant — see [[GAME_MECHANICS]] §3–4, [[PHYSICS]] §4.
 
+Player movement constants (not difficulty-scoped — only Putli's own speed/senses vary by preset above; illustrative defaults, tunable during playtesting per [[TESTING]] §4):
+
+```js
+PLAYER_MOVEMENT = {
+  walkSpeed: 1.8,          // m/s
+  sprintSpeed: 3.4,        // m/s
+  crouchSpeed: 0.9,        // m/s
+  capsuleRadius: 0.3,      // m, see PHYSICS §2
+  standHeight: 1.75,       // m
+  crouchHeight: 1.0,       // m
+  crouchTransitionSec: 0.2,
+  stepHeight: 0.2,         // m, see PHYSICS §2
+  gravity: 18,             // m/s^2, downward acceleration on the kinematic controller
+  staminaMax: 100,
+  staminaDrainPerSec: 20,  // ~5s of continuous sprint
+  staminaRegenPerSec: 12.5,
+  staminaMinToSprint: 5,   // sprint cannot start below this; can continue until 0
+  mouseSensitivity: 0.15,  // deg per pixel at the persisted settings.controls.mouseSensitivity default of 1.0 (see §2)
+  maxPitchDeg: 85          // camera pitch clamp, prevents look-axis flip
+}
+```
+
 ## 5. Config Data — Items
 
 ```js

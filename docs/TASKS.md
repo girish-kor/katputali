@@ -13,11 +13,11 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 
 ## M1 — Grey-Box Level & Player Movement
 
-- [ ] Block out all 13 rooms/4 floors at correct scale using primitive geometry, per [[LEVEL_DESIGN]] §3
-- [ ] Implement `player-controller`: move/look/sprint/crouch/stamina, capsule collider, step-up, per [[CONTROLS]], [[PHYSICS]] §2, §4
-- [ ] Implement basic collision categories (static geometry, doors) per [[PHYSICS]] §3
-- [ ] Implement `interaction` raycast + contextual prompt stub per [[GAME_MECHANICS]] §1
-- [ ] First performance check against [[PERFORMANCE]] §1 baseline on grey-box geometry
+- [x] Block out all 13 rooms/4 floors at correct scale using primitive geometry, per [[LEVEL_DESIGN]] §3
+- [x] Implement `player-controller`: move/look/sprint/crouch/stamina, capsule collider, step-up, per [[CONTROLS]], [[PHYSICS]] §2, §4
+- [x] Implement basic collision categories (static geometry, doors) per [[PHYSICS]] §3
+- [x] Implement `interaction` raycast + contextual prompt stub per [[GAME_MECHANICS]] §1
+- [x] First performance check against [[PERFORMANCE]] §1 baseline on grey-box geometry
 
 ## M2 — Putli AI
 
