@@ -1,4 +1,3 @@
-import { KEY_E } from 'playcanvas';
 import { selectInteractable } from './interaction-math.js';
 import { emit } from '../core/events.js';
 
@@ -10,9 +9,11 @@ const INTERACT_RANGE = 1.8; // meters, GAME_MECHANICS §1
  * line of sight, and emits events for the (not-yet-built) UI prompt and future
  * inventory/puzzle/read handlers to subscribe to — see ARCHITECTURE §3's event-bus convention.
  * No interactables are populated in the scene until M3 (GAME_MECHANICS §2, LEVEL_DESIGN §5-6);
- * this module is the mechanism, tested independently in interaction-math.test.js.
+ * this module is the mechanism, tested independently in interaction-math.test.js. The trigger key
+ * is read through `inputMap` (input-map.js) rather than a hardcoded engine key constant, per
+ * CONTROLS §3's full-rebinding requirement.
  */
-export function createInteraction(app, playerEntity, cameraEntity, geometry) {
+export function createInteraction(app, playerEntity, cameraEntity, geometry, inputMap) {
   let currentTargetId = null;
 
   function update() {
@@ -32,7 +33,7 @@ export function createInteraction(app, playerEntity, cameraEntity, geometry) {
       emit('interaction:target-changed', { targetId });
     }
 
-    if (app.keyboard.wasPressed(KEY_E) && currentTargetId) {
+    if (inputMap.wasPressed('interact') && currentTargetId) {
       emit('interaction:trigger', { targetId: currentTargetId });
     }
   }

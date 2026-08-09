@@ -17,7 +17,12 @@ export const DEFAULT_SETTINGS = {
       sprint: 'ShiftLeft', crouch: 'ControlLeft', interact: 'KeyE', inventory: 'Tab',
       drop: 'KeyG', pause: 'Escape', struggleLeft: 'KeyA', struggleRight: 'KeyD'
     },
-    gamepadBinds: {}
+    // Standard-mapping gamepad button indices, Xbox-layout reference per CONTROLS §2 (move/look
+    // are analog sticks, handled directly by input-map.js rather than as a rebindable button).
+    gamepadBinds: {
+      sprint: 10, crouch: 1, interact: 0, inventory: 3, drop: 2, pause: 9,
+      struggleLeft: 4, struggleRight: 5
+    }
   },
   accessibility: { captions: true, colorblindSafeHUD: false, cameraShakeIntensity: 1.0 }
 };
@@ -56,7 +61,10 @@ function validateSettings(raw) {
       }
     }
     if (raw.controls.gamepadBinds && typeof raw.controls.gamepadBinds === 'object') {
-      result.controls.gamepadBinds = clonePlain(raw.controls.gamepadBinds);
+      for (const [action, defaultIndex] of Object.entries(DEFAULT_SETTINGS.controls.gamepadBinds)) {
+        const value = raw.controls.gamepadBinds[action];
+        result.controls.gamepadBinds[action] = isFiniteNumberInRange(value, 0, 31) ? value : defaultIndex;
+      }
     }
   }
 

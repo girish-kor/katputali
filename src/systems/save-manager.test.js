@@ -19,7 +19,11 @@ describe('settings: round-trip through localStorage', () => {
     const storage = createMockStorage();
     const settings = {
       audio: { master: 0.5, music: 0.3, sfx: 0.9 },
-      controls: { mouseSensitivity: 1.5, invertY: true, keybinds: { ...DEFAULT_SETTINGS.controls.keybinds, interact: 'KeyF' }, gamepadBinds: {} },
+      controls: {
+        mouseSensitivity: 1.5, invertY: true,
+        keybinds: { ...DEFAULT_SETTINGS.controls.keybinds, interact: 'KeyF' },
+        gamepadBinds: { ...DEFAULT_SETTINGS.controls.gamepadBinds, interact: 2 }
+      },
       accessibility: { captions: false, colorblindSafeHUD: true, cameraShakeIntensity: 0.2 }
     };
     saveSettings(settings, storage);
@@ -50,6 +54,18 @@ describe('settings: malformed/missing data falls back to safe defaults (SECURITY
     expect(loaded.audio.music).toBe(DEFAULT_SETTINGS.audio.music);
     expect(loaded.audio.sfx).toBe(0.4);
     expect(loaded.controls.mouseSensitivity).toBe(DEFAULT_SETTINGS.controls.mouseSensitivity);
+  });
+
+  it('default-fills missing/invalid gamepad binds per action while keeping valid ones', () => {
+    const storage = createMockStorage();
+    storage.setItem('katputali:settings:v1', JSON.stringify({
+      controls: { gamepadBinds: { interact: 6, crouch: 'not-a-number', pause: 40 } }
+    }));
+    const loaded = loadSettings(storage);
+    expect(loaded.controls.gamepadBinds.interact).toBe(6);
+    expect(loaded.controls.gamepadBinds.crouch).toBe(DEFAULT_SETTINGS.controls.gamepadBinds.crouch);
+    expect(loaded.controls.gamepadBinds.pause).toBe(DEFAULT_SETTINGS.controls.gamepadBinds.pause); // 40 out of range
+    expect(loaded.controls.gamepadBinds.sprint).toBe(DEFAULT_SETTINGS.controls.gamepadBinds.sprint);
   });
 
   it('tolerates a stored value that is a JSON array instead of an object', () => {

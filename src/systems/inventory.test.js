@@ -107,3 +107,40 @@ describe('inventory: drop restrictions on key items (GAME_MECHANICS §2/§4)', (
     expect(dropped).toBeNull();
   });
 });
+
+describe('inventory: manual drop (dropMostRecentNonKeyItem, CONTROLS §1 "G")', () => {
+  const itemsById = new Map([
+    ['key_fragment_kitchen', { category: 'key' }],
+    ['ward_neem_guard_room', { category: 'ward' }],
+    ['note_library', { category: 'lore' }]
+  ]);
+
+  it('drops the most recently picked up non-key item', () => {
+    const inv = createInventory();
+    inv.addItem('ward_neem_guard_room');
+    inv.addItem('note_library');
+    expect(inv.dropMostRecentNonKeyItem(itemsById)).toBe('note_library');
+    expect(inv.hasItem('note_library')).toBe(false);
+    expect(inv.hasItem('ward_neem_guard_room')).toBe(true);
+  });
+
+  it('skips over a trailing key item to find the most recent droppable one', () => {
+    const inv = createInventory();
+    inv.addItem('ward_neem_guard_room');
+    inv.addItem('key_fragment_kitchen');
+    expect(inv.dropMostRecentNonKeyItem(itemsById)).toBe('ward_neem_guard_room');
+    expect(inv.hasItem('key_fragment_kitchen')).toBe(true);
+  });
+
+  it('returns null when only key items are carried', () => {
+    const inv = createInventory();
+    inv.addItem('key_fragment_kitchen');
+    expect(inv.dropMostRecentNonKeyItem(itemsById)).toBeNull();
+    expect(inv.hasItem('key_fragment_kitchen')).toBe(true);
+  });
+
+  it('returns null when nothing is carried', () => {
+    const inv = createInventory();
+    expect(inv.dropMostRecentNonKeyItem(itemsById)).toBeNull();
+  });
+});

@@ -59,5 +59,24 @@ export function createInventory(maxSlots = MAX_SLOTS) {
     return picked;
   }
 
-  return { addItem, removeItem, hasItem, hasAll, removeAll, hasSpace, getSlots, dropRandomNonKeyItem };
+  /**
+   * Manual voluntary drop (CONTROLS §1's "G — only for non-key items"): drops the most-recently
+   * picked-up non-key item, since there's no item-selection UI (GAME_MECHANICS §2 only specifies
+   * random-drop-on-capture; this mirrors that same "never drop a key item" rule for the manual case).
+   * @returns {string|null} the dropped item id, or null if nothing droppable was carried
+   */
+  function dropMostRecentNonKeyItem(itemsById) {
+    for (let i = slots.length - 1; i >= 0; i--) {
+      if (itemsById.get(slots[i])?.category !== 'key') {
+        const [dropped] = slots.splice(i, 1);
+        return dropped;
+      }
+    }
+    return null;
+  }
+
+  return {
+    addItem, removeItem, hasItem, hasAll, removeAll, hasSpace, getSlots,
+    dropRandomNonKeyItem, dropMostRecentNonKeyItem
+  };
 }
