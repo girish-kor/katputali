@@ -1,0 +1,23 @@
+{
+  "name": "katputali",
+  "version": "0.1.0",
+  "description": "A short, standalone, single-player horror game. Escape a cursed Rajasthani haveli before a puppet-spirit named Putli catches you three times — or before dawn arrives.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "playcanvas": "2.21.3"
+  },
+  "devDependencies": {
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
+  }
+}
