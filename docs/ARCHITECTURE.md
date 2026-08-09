@@ -31,8 +31,11 @@ flowchart TD
   /audio       — audio manifest/config (see AUDIO)
 /assets
   /models /textures /audio /fonts   — see ASSETS for sourcing per subfolder
-/public        — index.html, favicon, static passthrough files
+/public        — favicon, static passthrough files only (see M1 correction below)
+index.html     — Vite's HTML entry point, project root (standard Vite convention)
 ```
+
+**Correction (found post-M1, fixed after M6's HUD work):** `index.html` was originally placed in `/public` with `vite.config.js` set to `root: 'public'`. This built correctly (`vite build` resolves the entry's relative script path against the HTML file's location on disk) but silently broke `npm run dev` — the dev server resolves that same relative path against its URL namespace, which is anchored at `root`, so `/src/core/main.js` doesn't exist relative to `public/` and Vite's history-API fallback served `index.html` itself instead of the app, with no error, just wrong content. Moved `index.html` to the project root (the convention every other Vite project uses) and reverted `vite.config.js` to Vite's defaults (implicit `root: '.'`, `publicDir: 'public'`) — `/public` now holds only genuine static-passthrough files, verified working via `npm run dev` end-to-end.
 
 ## 3. Core Systems (module responsibilities)
 
