@@ -4,12 +4,12 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 
 ## M0 — Project Scaffold
 
-- [ ] Init Git repo, `npm init`, install `playcanvas` + `vite` + `vitest` (see [[TECH_STACK]])
-- [ ] Set up `/src` folder structure per [[ARCHITECTURE]] §2
-- [ ] Bootstrap a minimal PlayCanvas app (`main.js`) rendering an empty scene with a camera
-- [ ] Set up GitHub Actions CI (test + build) per [[DEPLOYMENT]] §3
-- [ ] Deploy the empty scene to the chosen static host per [[DEPLOYMENT]] §2 — confirms the full pipeline works end to end before any real content exists
-- [ ] Add CSP meta tag and base `index.html` per [[SECURITY]] §5
+- [x] Init Git repo, `npm init`, install `playcanvas` + `vite` + `vitest` (see [[TECH_STACK]])
+- [x] Set up `/src` folder structure per [[ARCHITECTURE]] §2
+- [x] Bootstrap a minimal PlayCanvas app (`main.js`) rendering an empty scene with a camera
+- [x] Set up GitHub Actions CI (test + build) per [[DEPLOYMENT]] §3
+- [x] Deploy the empty scene to the chosen static host per [[DEPLOYMENT]] §2 — confirms the full pipeline works end to end before any real content exists
+- [x] Add CSP meta tag and base `index.html` per [[SECURITY]] §5
 
 ## M1 — Grey-Box Level & Player Movement
 
