@@ -67,7 +67,7 @@ Implementation task breakdown, phased for solo execution. Mirrors the milestones
 - [ ] Implement player footstep/breathing/interact audio per [[AUDIO]] §2
 - [ ] Implement ambient layers per floor/room per [[AUDIO]] §2
 - [ ] Implement music stingers at key tension beats per [[AUDIO]] §2
-- [ ] Build full HUD (Prahar clock, capture pips, Nazar meter, inventory bar) per [[UI_UX]] §2
+- [x] Build full HUD (Prahar clock, capture pips, Nazar meter, inventory bar) per [[UI_UX]] §2 — also includes the interact prompt and struggle QTE overlay from the same §2 table; final aged-paper/miniature-painting-frame texture is separate M5 Art Pass work layered onto this structure later
 - [ ] Build Title/Settings/Difficulty-Select/Pause/End screens per [[UI_UX]] §1, §4–5
 - [ ] Implement captions for all critical audio cues per [[UI_UX]] §6, [[AUDIO]] §5
 - [ ] Implement colorblind-safe HUD toggle, camera-shake slider per [[UI_UX]] §6

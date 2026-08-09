@@ -9,6 +9,7 @@ import { createInteractableEntities } from '../entities/interactables.js';
 import { createInteractableHandler } from '../systems/interactable-handler.js';
 import { createNoiseTrapTracker } from '../systems/noise-traps.js';
 import { createRunManager } from '../systems/run-state.js';
+import { createHud } from '../ui/hud.js';
 import { INTERACTABLES } from '../data/interactables.js';
 import { NOISE_TRAP_RADIUS, DEFAULT_DIFFICULTY } from '../data/difficulty-presets.js';
 import { emit } from '../core/events.js';
@@ -57,6 +58,8 @@ const runManager = createRunManager({
   captureFlow
 });
 
+const hud = createHud({ player, runManager, world: interactableHandler.world });
+
 app.on('update', dt => {
   player.update(dt);
   putli.update(dt);
@@ -66,6 +69,8 @@ app.on('update', dt => {
   for (const trap of triggered) {
     emit('noise:emitted', { position: trap.position, radius: NOISE_TRAP_RADIUS });
   }
+
+  hud.update();
 });
 
 app.start();

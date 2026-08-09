@@ -11,3 +11,126 @@ html, body {
   height: 100%;
   display: block;
 }
+
+/*
+ * HUD (UI_UX §2). Grey-box styling: color/border treatment approximating the project palette
+ * (ASSETS §4) and corner-anchored layout now; the aged-paper/miniature-painting-frame texture
+ * itself is M5 Art Pass work layered on top of this structure later, not a blocker for it.
+ */
+
+.hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  font-family: Georgia, "Iowan Old Style", serif;
+  color: #ece6d6;
+  z-index: 10;
+}
+
+.hud-corner {
+  position: absolute;
+  padding: 0.5rem 0.9rem;
+  background: rgba(35, 42, 77, 0.72);
+  border: 1px solid #8a5a2b;
+  border-radius: 2px;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.hud-top-right { top: 1rem; right: 1rem; text-align: right; }
+.hud-top-left { top: 1rem; left: 1rem; }
+
+.hud-captures { top: 3.4rem; display: flex; gap: 0.35rem; justify-content: flex-end; }
+
+.hud-pip {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 1px solid #d4af37;
+  background: transparent;
+}
+.hud-pip-filled { background: #b33a2e; }
+
+.hud-meter-track {
+  width: 9rem;
+  height: 0.6rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #d4af37;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hud-meter-fill {
+  height: 100%;
+  background: #b33a2e;
+  width: 0%;
+  transition: width 0.15s ease-out;
+}
+.hud-nazar-hallucinating .hud-meter-fill { background: #7c93c7; }
+
+.hud-inventory {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hud-slot {
+  width: 5.2rem;
+  height: 3.2rem;
+  background: rgba(35, 42, 77, 0.72);
+  border: 1px solid #8a5a2b;
+  border-radius: 2px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.2rem;
+  color: #a7b0d6;
+}
+.hud-slot-filled { border-color: #d4af37; color: #ece6d6; }
+
+.hud-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.hud-interact-prompt {
+  top: 62%;
+  padding: 0.4rem 0.9rem;
+  background: rgba(35, 42, 77, 0.8);
+  border: 1px solid #d4af37;
+  border-radius: 2px;
+  font-size: 0.95rem;
+}
+
+.hud-struggle {
+  top: 40%;
+  width: 16rem;
+  padding: 0.8rem 1rem;
+  background: rgba(35, 42, 77, 0.85);
+  border: 1px solid #b33a2e;
+  border-radius: 2px;
+}
+.hud-struggle-text { margin-bottom: 0.5rem; font-size: 0.95rem; }
+.hud-struggle-track { width: 100%; }
+
+.hud-fullscreen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: rgba(20, 16, 10, 0.92);
+  pointer-events: auto;
+}
+.hud-end-title { font-size: 2rem; margin: 0; color: #d4af37; }
+.hud-end-stats { font-size: 1rem; color: #ece6d6; }
+
+.hud-hidden { display: none; }

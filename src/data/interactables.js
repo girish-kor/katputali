@@ -42,14 +42,14 @@ export const READABLES = [
 
 /** Stations: use-in-place/combine interactables driving puzzle-stations.js. */
 export const STATIONS = [
-  { id: 'smithy-workbench', roomId: 'smithy', type: 'station', itemId: null, position: { x: 11.5, y: 0, z: 0 } },
-  { id: 'front-gate', roomId: 'entrance-hall', type: 'station', itemId: null, position: { x: 0, y: 0, z: -12 } },
-  { id: 'stepwell-pulley', roomId: 'stepwell', type: 'station', itemId: null, position: { x: 4, y: -3.3, z: 4 } },
-  { id: 'wall-sconce', roomId: 'stepwell', type: 'station', itemId: null, position: { x: -4, y: -3.3, z: -4 } },
-  { id: 'tunnel-grate', roomId: 'stepwell', type: 'station', itemId: null, position: { x: 0, y: -3.3, z: -4.5 } },
-  { id: 'zipline-chhatri', roomId: 'zipline-chhatri', type: 'station', itemId: null, position: { x: 6.5, y: 6.6, z: 0 } },
-  { id: 'sohni-bais-room-door', roomId: 'sohni-bais-room', type: 'station', itemId: null, position: { x: -3.5, y: 3.3, z: 0 } },
-  { id: 'fresco-station', roomId: 'library', type: 'station', itemId: null, position: { x: 0, y: 3.3, z: 3 } }
+  { id: 'smithy-workbench', roomId: 'smithy', type: 'station', itemId: null, label: 'Smithy Workbench', position: { x: 11.5, y: 0, z: 0 } },
+  { id: 'front-gate', roomId: 'entrance-hall', type: 'station', itemId: null, label: 'Front Gate', position: { x: 0, y: 0, z: -12 } },
+  { id: 'stepwell-pulley', roomId: 'stepwell', type: 'station', itemId: null, label: 'Stepwell Pulley', position: { x: 4, y: -3.3, z: 4 } },
+  { id: 'wall-sconce', roomId: 'stepwell', type: 'station', itemId: null, label: 'Wall Sconce', position: { x: -4, y: -3.3, z: -4 } },
+  { id: 'tunnel-grate', roomId: 'stepwell', type: 'station', itemId: null, label: 'Tunnel Grate', position: { x: 0, y: -3.3, z: -4.5 } },
+  { id: 'zipline-chhatri', roomId: 'zipline-chhatri', type: 'station', itemId: null, label: 'Zipline Rig', position: { x: 6.5, y: 6.6, z: 0 } },
+  { id: 'sohni-bais-room-door', roomId: 'sohni-bais-room', type: 'station', itemId: null, label: "Sohni Bai's Door", position: { x: -3.5, y: 3.3, z: 0 } },
+  { id: 'fresco-station', roomId: 'library', type: 'station', itemId: null, label: 'Fresco Wall', position: { x: 0, y: 3.3, z: 3 } }
 ];
 
 /** @type {InteractableDefinition[]} */
