@@ -42,16 +42,19 @@ Custom-made assets (modeled/textured by the solo dev, or AI-assisted per [[CODIN
 
 | Asset | Source | License | Attribution required? | Notes |
 |---|---|---|---|---|
-| Base low-poly environment kit | Kenney.nl | CC0 | No | Retextured for palette match |
-| Low-poly prop pack | Quaternius | CC0 | No | Used for generic furniture base meshes |
-| Skybox/lighting reference HDRI | Poly Haven | CC0 | No | Baked into scene lighting, not shipped as a raw asset if avoidable (perf) |
-| Humanoid animation rig/base | Mixamo | Free (Adobe Mixamo license) | No (per Mixamo terms) | Used for Meera hand/arm and Putli base animation retargeting |
-| Display font (headers) | Google Fonts | OFL | No (but credited anyway) | See [[UI_UX]] §7 |
-| Body font | Google Fonts | OFL | No (but credited anyway) | |
-| SFX set | Freesound.org contributors | CC0 / CC-BY (per-file) | Per-file, tracked at asset-add time | See [[AUDIO]] §1 |
-| Ambient/music beds | Freesound.org / original composition | CC0 / CC-BY / Original | Per-file | See [[AUDIO]] §1 |
-| Putli character model & textures | Original | N/A (own work) | N/A | |
-| Environment retexturing & unique props | Original | N/A (own work) | N/A | |
+| Castle Kit (406 files) | Kenney.nl | CC0 | No (credited anyway) | `/assets/models/kenney-castle-kit/` — arches, columns, stone walls for haveli masonry, retexture for palette match |
+| Fantasy Town Kit v2.0 (856 files) | Kenney.nl | CC0 | No (credited anyway) | `/assets/models/kenney-fantasy-town-kit/` — door/window frame shapes to reshape into *jharokha*/*jaali* proportions |
+| Furniture Kit (1557 files) | Kenney.nl | CC0 | No (credited anyway) | `/assets/models/kenney-furniture-kit/` — base meshes for guard-room/library/bedroom set dressing |
+| Low-poly prop pack | Quaternius | CC0 | No | Not yet downloaded — itch.io's "name your own price" purchase flow needs a manual browser session, couldn't be scripted; Kenney's kits above cover the immediate kitbash need |
+| "Large Sandstone Blocks" PBR texture (diffuse/normal/roughness/AO, 1k) | Poly Haven | CC0 | No | `/assets/textures/polyhaven-large-sandstone-blocks/` — author: Rob Tuytel |
+| "Courtyard Night" HDRI (1k) | Poly Haven | CC0 | No | `/assets/textures/polyhaven-hdri/courtyard_night_1k.hdr` — lighting reference only, not shipped in the build per §3's perf note |
+| Humanoid animation rig/base | Mixamo | Free (Adobe Mixamo license) | No (per Mixamo terms) | Not yet downloaded — needs a logged-in Adobe account via browser, not scriptable; used for Meera hand/arm and Putli base animation retargeting when added |
+| Rasa (body font, 4 weights) | Google Fonts | OFL | No (but credited anyway) | `/assets/fonts/rasa/` — see [[UI_UX]] §7 |
+| Yatra One (display font) | Google Fonts | OFL | No (but credited anyway) | `/assets/fonts/yatra-one/` |
+| SFX set | Freesound.org contributors | CC0 / CC-BY (per-file) | Per-file, tracked at asset-add time | Not yet sourced — M6 work, see [[AUDIO]] §1 |
+| Ambient/music beds | Freesound.org / original composition | CC0 / CC-BY / Original | Per-file | Not yet sourced — M6 work, see [[AUDIO]] §1 |
+| Putli character model & textures | Original | N/A (own work) | N/A | Not yet modeled |
+| Environment retexturing & unique props | Original | N/A (own work) | N/A | Not yet modeled |
 
 All CC-BY entries must have their specific author/title recorded here at the time the asset is added (this table's rows are a template — the actual populated table with exact filenames/authors is maintained as the project's assets are added, and mirrored into the in-game Credits screen per [[UI_UX]] §1). No asset is merged into the build without a corresponding row.
 
